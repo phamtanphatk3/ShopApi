@@ -1,0 +1,152 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using ShopApi.Data;
+using ShopApi.DTOs.Cart;
+using ShopApi.Models;
+using System.Security.Claims;
+
+namespace ShopApi.Services
+{
+    public class CartService
+    {
+        private readonly AppDbContext _context;
+        private readonly IHttpContextAccessor _http;
+
+        public CartService(AppDbContext context, IHttpContextAccessor http)
+        {
+            _context = context;
+            _http = http;
+        }
+
+        private int GetCurrentUserId()
+        {
+            var userIdClaim = _http.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                throw new Exception("Unauthorized");
+
+            return int.Parse(userIdClaim.Value);
+        }
+
+        // Lấy hoặc tạo cart theo user hiện tại
+        private async Task<Cart> GetCart(int userId)
+        {
+            var cart = await _context.Carts
+                .Include(x => x.Items)
+                .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (cart == null)
+            {
+                cart = new Cart
+                {
+                    UserId = userId
+                };
+                _context.Carts.Add(cart);
+                await _context.SaveChangesAsync();
+            }
+
+            return cart;
+        }
+
+        // Thêm vào giỏ
+        public async Task AddToCart(AddToCartDto dto)
+        {
+            if (dto.Quantity <= 0)
+                throw new Exception("Quantity must be greater than 0");
+
+            var product = await _context.Products
+                .FirstOrDefaultAsync(x => x.Id == dto.ProductId && x.IsActive);
+            if (product == null)
+                throw new Exception("Product not found");
+
+            var userId = GetCurrentUserId();
+            var cart = await GetCart(userId);
+
+            var item = cart.Items.FirstOrDefault(x => x.ProductId == dto.ProductId);
+
+            if (item != null)
+            {
+                var newQuantity = item.Quantity + dto.Quantity;
+                if (newQuantity > product.StockQuantity)
+                    throw new Exception("Not enough stock");
+
+                item.Quantity += dto.Quantity;
+            }
+            else
+            {
+                if (dto.Quantity > product.StockQuantity)
+                    throw new Exception("Not enough stock");
+
+                cart.Items.Add(new CartItem
+                {
+                    ProductId = dto.ProductId,
+                    Quantity = dto.Quantity
+                });
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        // Cập nhật số lượng
+        public async Task UpdateItem(int itemId, int quantity)
+        {
+            if (quantity <= 0)
+                throw new Exception("Quantity must be greater than 0");
+
+            var userId = GetCurrentUserId();
+
+            var item = await _context.CartItems
+                .Include(x => x.Cart)
+                .Include(x => x.Product)
+                .FirstOrDefaultAsync(x => x.Id == itemId && x.Cart.UserId == userId);
+
+            if (item == null) throw new Exception("Item not found");
+            if (item.Product == null) throw new Exception("Product not found");
+            if (quantity > item.Product.StockQuantity)
+                throw new Exception("Not enough stock");
+
+            item.Quantity = quantity;
+            await _context.SaveChangesAsync();
+        }
+
+        // Xóa
+        public async Task RemoveItem(int itemId)
+        {
+            var userId = GetCurrentUserId();
+
+            var item = await _context.CartItems
+                .Include(x => x.Cart)
+                .FirstOrDefaultAsync(x => x.Id == itemId && x.Cart.UserId == userId);
+
+            if (item == null) throw new Exception("Item not found");
+
+            _context.CartItems.Remove(item);
+            await _context.SaveChangesAsync();
+        }
+
+        // Lấy giỏ hàng
+        public async Task<CartResponseDto> GetCartDetail()
+        {
+            var userId = GetCurrentUserId();
+            var cart = await GetCart(userId);
+
+            var items = cart.Items.Select(x => new
+            {
+                x.Id,
+                x.ProductId,
+                x.Product.Name,
+                x.Product.Price,
+                x.Quantity,
+                Total = x.Product.Price * x.Quantity
+            }).ToList();
+
+            var total = items.Sum(x => x.Total);
+
+            return new CartResponseDto
+            {
+                Items = items.Cast<object>().ToList(),
+                TotalPrice = total
+            };
+        }
+    }
+}
