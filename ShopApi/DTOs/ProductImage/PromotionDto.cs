@@ -2,8 +2,10 @@
 {
     public class PromotionDto
     {
-        public string Name { get; set; }
-        public decimal? DiscountPercent { get; set; }
-        public decimal? DiscountAmount { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string? DiscountType { get; set; }
+        public decimal? DiscountValue { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 }

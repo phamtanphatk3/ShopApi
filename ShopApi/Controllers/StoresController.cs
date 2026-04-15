@@ -16,11 +16,11 @@ namespace ShopApi.Controllers
         }
 
         // 🔥 1. TÌM THEO TỈNH
-        [HttpGet("by-city")]
-        public async Task<IActionResult> GetByCity(string city)
+        [HttpGet("by-province")]
+        public async Task<IActionResult> GetByProvince(string province)
         {
             var data = await _context.Stores
-                .Where(x => x.City == city)
+                .Where(x => x.Province == province)
                 .ToListAsync();
 
             return Ok(data);

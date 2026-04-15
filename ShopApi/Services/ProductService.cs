@@ -82,7 +82,8 @@ namespace ShopApi.Services
                     Brand = x.Brand,
                     Price = x.Price, // giá gốc
 
-                    FinalPrice = CalculatePriceWithBase(basePrice, promo) // 🔥 chuẩn
+                    FinalPrice = CalculatePriceWithBase(basePrice, promo), // 🔥 chuẩn
+                    StockQuantity = x.StockQuantity
                 };
             }).ToList();
 
@@ -122,7 +123,8 @@ namespace ShopApi.Services
                 SKU = p.SKU,
                 Brand = p.Brand,
                 Price = p.Price,
-                FinalPrice = CalculatePriceWithBase(basePrice, promo)
+                FinalPrice = CalculatePriceWithBase(basePrice, promo),
+                StockQuantity = p.StockQuantity
             };
         }
 
@@ -254,15 +256,18 @@ namespace ShopApi.Services
         }
 
         // 🔥 PROMOTION
-        private decimal CalculatePriceWithBase(decimal basePrice, Promotion promo)
+        private decimal CalculatePriceWithBase(decimal basePrice, Promotion? promo)
         {
             if (promo == null) return basePrice;
 
-            if (promo.DiscountPercent.HasValue)
-                return basePrice * (1 - promo.DiscountPercent.Value / 100);
+            if (!string.IsNullOrWhiteSpace(promo.DiscountType))
+            {
+                if (promo.DiscountType.Equals("Percent", StringComparison.OrdinalIgnoreCase))
+                    return basePrice * (1 - promo.DiscountValue / 100m);
 
-            if (promo.DiscountAmount.HasValue)
-                return basePrice - promo.DiscountAmount.Value;
+                if (promo.DiscountType.Equals("Amount", StringComparison.OrdinalIgnoreCase))
+                    return basePrice - promo.DiscountValue;
+            }
 
             return basePrice;
         }

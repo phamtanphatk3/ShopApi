@@ -28,7 +28,7 @@ namespace ShopApi.Services
             }
 
             // 🔥 Nếu là ảnh đại diện → tắt tất cả ảnh cũ
-            if (dto.IsPrimary)
+            if (dto.IsMain)
             {
                 var oldImages = await _context.ProductImages
                     .Where(x => x.ProductId == productId)
@@ -36,7 +36,7 @@ namespace ShopApi.Services
 
                 foreach (var img in oldImages)
                 {
-                    img.IsPrimary = false;
+                    img.IsMain = false;
                 }
             }
 
@@ -44,7 +44,7 @@ namespace ShopApi.Services
             {
                 ImageUrl = "/images/" + fileName,
                 ProductId = productId,
-                IsPrimary = dto.IsPrimary,
+                IsMain = dto.IsMain,
                 SortOrder = dto.SortOrder
             };
 
@@ -61,7 +61,7 @@ namespace ShopApi.Services
                 .Select(x => new ProductImageResponseDto
                 {
                     ImageUrl = x.ImageUrl,
-                    IsPrimary = x.IsPrimary,
+                    IsMain = x.IsMain,
                     SortOrder = x.SortOrder
                 })
                 .ToListAsync();

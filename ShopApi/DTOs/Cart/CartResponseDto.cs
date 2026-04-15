@@ -2,7 +2,7 @@
 {
     public class CartResponseDto
     {
-        public List<object> Items { get; set; }
+        public List<object> Items { get; set; } = new();
 
         public decimal TotalPrice { get; set; }
     }

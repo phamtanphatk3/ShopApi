@@ -5,7 +5,7 @@ namespace ShopApi.Models
         public int Id { get; set; }
 
         public int ProductId { get; set; }
-        public Product Product { get; set; }
+        public Product Product { get; set; } = null!;
 
         public decimal ProductPrice { get; set; }
 
@@ -13,8 +13,8 @@ namespace ShopApi.Models
         public decimal DownPayment { get; set; } // tra truoc
         public decimal MonthlyPayment { get; set; } // tra moi thang
 
-        public string CustomerName { get; set; }
-        public string Phone { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }

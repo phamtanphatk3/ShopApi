@@ -1,7 +1,8 @@
-﻿using ShopApi.DTOs.Category;
+using ShopApi.DTOs.Category;
 using ShopApi.Models;
 using ShopApi.Repositories.Interfaces;
 using ShopApi.Services.Interfaces;
+using System.Text.RegularExpressions;
 
 namespace ShopApi.Services
 {
@@ -21,7 +22,8 @@ namespace ShopApi.Services
             return data.Select(c => new CategoryResponseDto
             {
                 Id = c.Id,
-                Name = c.Name
+                Name = c.Name,
+                Slug = c.Slug
             }).ToList();
         }
 
@@ -33,7 +35,8 @@ namespace ShopApi.Services
             return new CategoryResponseDto
             {
                 Id = c.Id,
-                Name = c.Name
+                Name = c.Name,
+                Slug = c.Slug
             };
         }
 
@@ -42,6 +45,7 @@ namespace ShopApi.Services
             var category = new Category
             {
                 Name = dto.Name,
+                Slug = BuildSlug(dto.Slug, dto.Name),
                 ParentCategoryId = dto.ParentCategoryId
             };
 
@@ -55,6 +59,7 @@ namespace ShopApi.Services
             if (c == null) throw new Exception("Category not found");
 
             c.Name = dto.Name;
+            c.Slug = BuildSlug(dto.Slug, dto.Name);
             c.IsActive = dto.IsActive;
 
             _repo.Update(c);
@@ -73,6 +78,17 @@ namespace ShopApi.Services
             c.IsActive = false;
             _repo.Update(c);
             await _repo.SaveChangesAsync();
+        }
+
+        private static string BuildSlug(string? slug, string name)
+        {
+            var source = string.IsNullOrWhiteSpace(slug) ? name : slug;
+            var normalized = source.Trim().ToLowerInvariant();
+            normalized = normalized.Replace("đ", "d");
+            normalized = Regex.Replace(normalized, @"\s+", "-");
+            normalized = Regex.Replace(normalized, @"[^a-z0-9\-]", "");
+            normalized = Regex.Replace(normalized, @"-+", "-").Trim('-');
+            return normalized;
         }
     }
 }

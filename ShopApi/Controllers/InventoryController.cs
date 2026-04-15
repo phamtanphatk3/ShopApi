@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+ï»¿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopApi.DTOs.Inventory;
 using ShopApi.Services;
@@ -17,23 +17,20 @@ namespace ShopApi.Controllers
             _service = service;
         }
 
-        // ? Nh?p kho
         [HttpPost("import")]
         public async Task<IActionResult> Import(int productId, InventoryDto dto)
         {
             await _service.ImportAsync(productId, dto.Quantity);
-            return Ok("Nh?p kho thành công");
+            return Ok("Nhap kho thanh cong");
         }
 
-        // ? Xu?t kho
         [HttpPost("export")]
         public async Task<IActionResult> Export(int productId, InventoryDto dto)
         {
             await _service.ExportAsync(productId, dto.Quantity);
-            return Ok("Xu?t kho thành công");
+            return Ok("Xuat kho thanh cong");
         }
 
-        // ? L?ch s?
         [HttpGet("history")]
         public async Task<IActionResult> History(int productId)
         {

@@ -58,14 +58,17 @@ namespace ShopApi.Controllers
                 .Select(o => new
                 {
                     o.Id,
+                    o.OrderCode,
+                    o.CustomerName,
                     o.Status,
-                    o.TotalPrice,
+                    o.FinalAmount,
                     o.CreatedAt,
                     Items = o.Items.Select(i => new
                     {
                         i.ProductId,
                         i.Quantity,
-                        i.Price
+                        i.UnitPrice,
+                        i.LineTotal
                     })
                 })
                 .ToListAsync();
@@ -83,8 +86,10 @@ namespace ShopApi.Controllers
                 .Select(o => new
                 {
                     o.Id,
+                    o.OrderCode,
+                    o.CustomerName,
                     o.Status,
-                    o.TotalPrice,
+                    o.FinalAmount,
                     o.CreatedAt,
                     Username = o.User.Username
                 })
@@ -117,15 +122,18 @@ namespace ShopApi.Controllers
             return Ok(new
             {
                 order.Id,
+                order.OrderCode,
+                order.CustomerName,
                 order.Status,
-                order.TotalPrice,
+                order.FinalAmount,
                 order.CreatedAt,
                 Username = order.User.Username,
                 Items = order.Items.Select(i => new
                 {
                     i.ProductId,
                     i.Quantity,
-                    i.Price
+                    i.UnitPrice,
+                    i.LineTotal
                 })
             });
         }

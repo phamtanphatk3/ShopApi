@@ -21,6 +21,10 @@ namespace ShopApi.Services
 
         public async Task<string?> Login(string username, string password)
         {
+            var jwtKey = _config["Jwt:Key"];
+            if (string.IsNullOrWhiteSpace(jwtKey))
+                throw new Exception("JWT Key is missing");
+
             var user = await _context.Users
                 .FirstOrDefaultAsync(x => x.Username == username);
 
@@ -46,7 +50,7 @@ namespace ShopApi.Services
             };
 
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+                Encoding.UTF8.GetBytes(jwtKey));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

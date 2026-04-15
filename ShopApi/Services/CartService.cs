@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ShopApi.Data;
 using ShopApi.DTOs.Cart;
@@ -27,7 +27,7 @@ namespace ShopApi.Services
             return int.Parse(userIdClaim.Value);
         }
 
-        // Lấy hoặc tạo cart theo user hiện tại
+        // Get existing cart or create a new cart for current user
         private async Task<Cart> GetCart(int userId)
         {
             var cart = await _context.Carts
@@ -39,7 +39,8 @@ namespace ShopApi.Services
             {
                 cart = new Cart
                 {
-                    UserId = userId
+                    UserId = userId,
+                    CreatedAt = DateTime.UtcNow
                 };
                 _context.Carts.Add(cart);
                 await _context.SaveChangesAsync();
@@ -48,7 +49,7 @@ namespace ShopApi.Services
             return cart;
         }
 
-        // Thêm vào giỏ
+        // Add item to cart
         public async Task AddToCart(AddToCartDto dto)
         {
             if (dto.Quantity <= 0)
@@ -71,6 +72,7 @@ namespace ShopApi.Services
                     throw new Exception("Not enough stock");
 
                 item.Quantity += dto.Quantity;
+                item.UnitPrice = product.Price;
             }
             else
             {
@@ -80,14 +82,15 @@ namespace ShopApi.Services
                 cart.Items.Add(new CartItem
                 {
                     ProductId = dto.ProductId,
-                    Quantity = dto.Quantity
+                    Quantity = dto.Quantity,
+                    UnitPrice = product.Price
                 });
             }
 
             await _context.SaveChangesAsync();
         }
 
-        // Cập nhật số lượng
+        // Update item quantity
         public async Task UpdateItem(int itemId, int quantity)
         {
             if (quantity <= 0)
@@ -106,10 +109,11 @@ namespace ShopApi.Services
                 throw new Exception("Not enough stock");
 
             item.Quantity = quantity;
+            item.UnitPrice = item.Product.Price;
             await _context.SaveChangesAsync();
         }
 
-        // Xóa
+        // Remove item
         public async Task RemoveItem(int itemId)
         {
             var userId = GetCurrentUserId();
@@ -124,7 +128,7 @@ namespace ShopApi.Services
             await _context.SaveChangesAsync();
         }
 
-        // Lấy giỏ hàng
+        // Get cart detail
         public async Task<CartResponseDto> GetCartDetail()
         {
             var userId = GetCurrentUserId();
@@ -135,9 +139,9 @@ namespace ShopApi.Services
                 x.Id,
                 x.ProductId,
                 x.Product.Name,
-                x.Product.Price,
+                UnitPrice = x.UnitPrice,
                 x.Quantity,
-                Total = x.Product.Price * x.Quantity
+                Total = x.UnitPrice * x.Quantity
             }).ToList();
 
             var total = items.Sum(x => x.Total);

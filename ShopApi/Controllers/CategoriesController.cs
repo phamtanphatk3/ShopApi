@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+ï»¿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopApi.Common;
 using ShopApi.DTOs.Category;
@@ -25,7 +25,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<List<CategoryResponseDto>>
             {
                 Success = true,
-                Message = "L?y danh sách thành công",
+                Message = "Lay danh sach thanh cong",
                 Data = data
             });
         }
@@ -35,17 +35,17 @@ namespace ShopApi.Controllers
         {
             var data = await _service.GetByIdAsync(id);
             if (data == null)
-                return NotFound(new ApiResponse<string>
+                return NotFound(new ApiResponse<string?>
                 {
                     Success = false,
-                    Message = "Không tìm th?y",
+                    Message = "Khong tim thay",
                     Data = null
                 });
 
             return Ok(new ApiResponse<CategoryResponseDto>
             {
                 Success = true,
-                Message = "Thành công",
+                Message = "Thanh cong",
                 Data = data
             });
         }
@@ -59,7 +59,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<string>
             {
                 Success = true,
-                Message = "T?o thành công",
+                Message = "Tao thanh cong",
                 Data = null
             });
         }
@@ -73,7 +73,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<string>
             {
                 Success = true,
-                Message = "C?p nh?t thành công",
+                Message = "Cap nhat thanh cong",
                 Data = null
             });
         }
@@ -87,7 +87,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<string>
             {
                 Success = true,
-                Message = "Xóa thành công",
+                Message = "Xoa thanh cong",
                 Data = null
             });
         }

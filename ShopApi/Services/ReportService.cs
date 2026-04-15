@@ -23,7 +23,7 @@ namespace ShopApi.Services
                 .Select(g => new RevenueByDayDto
                 {
                     Date = g.Key,
-                    Revenue = g.Sum(x => x.TotalPrice),
+                    Revenue = g.Sum(x => x.FinalAmount),
                     OrderCount = g.Count()
                 })
                 .OrderBy(x => x.Date)
@@ -41,7 +41,7 @@ namespace ShopApi.Services
                 {
                     Year = g.Key.Year,
                     Month = g.Key.Month,
-                    Revenue = g.Sum(x => x.TotalPrice),
+                    Revenue = g.Sum(x => x.FinalAmount),
                     OrderCount = g.Count()
                 })
                 .OrderBy(x => x.Year)
@@ -64,7 +64,7 @@ namespace ShopApi.Services
                     ProductName = g.Key.Name,
                     SKU = g.Key.SKU,
                     QuantitySold = g.Sum(x => x.Quantity),
-                    Revenue = g.Sum(x => x.Price * x.Quantity)
+                    Revenue = g.Sum(x => x.LineTotal)
                 })
                 .OrderByDescending(x => x.QuantitySold)
                 .ThenByDescending(x => x.Revenue)
@@ -80,7 +80,7 @@ namespace ShopApi.Services
                 {
                     Status = g.Key,
                     Count = g.Count(),
-                    TotalRevenue = g.Sum(x => x.TotalPrice)
+                    TotalRevenue = g.Sum(x => x.FinalAmount)
                 })
                 .OrderBy(x => x.Status)
                 .ToListAsync();

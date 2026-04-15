@@ -1,8 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
+Ôªøusing Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ShopApi.Data;
 using ShopApi.DTOs.ProductImage;
-using ShopApi.Models;
+using ShopApi.Services;
 
 namespace ShopApi.Controllers
 {
@@ -11,45 +10,25 @@ namespace ShopApi.Controllers
     [Authorize(Roles = "Admin,Staff")]
     public class PromotionsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly PromotionService _service;
 
-        public PromotionsController(AppDbContext context)
+        public PromotionsController(PromotionService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(PromotionDto dto)
         {
-            var promo = new Promotion
-            {
-                Name = dto.Name,
-                DiscountPercent = dto.DiscountPercent,
-                DiscountAmount = dto.DiscountAmount,
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddDays(7),
-                IsActive = true
-            };
-
-            _context.Promotions.Add(promo);
-            await _context.SaveChangesAsync();
-
+            var promo = await _service.CreateAsync(dto);
             return Ok(promo);
         }
 
         [HttpPost("{promoId}/products/{productId}")]
         public async Task<IActionResult> Assign(int promoId, int productId)
         {
-            var map = new ProductPromotion
-            {
-                ProductId = productId,
-                PromotionId = promoId
-            };
-
-            _context.ProductPromotions.Add(map);
-            await _context.SaveChangesAsync();
-
-            return Ok("G·n th‡nh cÙng");
+            await _service.AssignAsync(promoId, productId);
+            return Ok("G√°n th√†nh c√¥ng");
         }
     }
 }

@@ -8,10 +8,10 @@
 
         public int Quantity { get; set; } // + hoặc -
 
-        public string Type { get; set; } // "IMPORT" | "EXPORT"
+        public string Type { get; set; } = string.Empty; // "IMPORT" | "EXPORT"
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public Product Product { get; set; }
+        public Product Product { get; set; } = null!;
     }
 }

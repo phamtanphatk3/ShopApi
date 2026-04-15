@@ -21,6 +21,7 @@ namespace ShopApi.Data
         public DbSet<Store> Stores { get; set; }
         public DbSet<StoreInventory> StoreInventories { get; set; }
         public DbSet<InstallmentRequest> InstallmentRequests { get; set; }
+        public DbSet<WarrantyRecord> WarrantyRecords { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public DbSet<User> Users { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,9 +34,13 @@ namespace ShopApi.Data
 
             // Seed data
             modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, Name = "Điện thoại" },
-                new Category { Id = 2, Name = "Laptop" }
+                new Category { Id = 1, Name = "Điện thoại", Slug = "dien-thoai" },
+                new Category { Id = 2, Name = "Laptop", Slug = "laptop" }
             );
+
+            modelBuilder.Entity<Category>()
+                .HasIndex(c => c.Slug)
+                .IsUnique();
 
             modelBuilder.Entity<ProductPromotion>()
             .HasKey(x => new { x.ProductId, x.PromotionId });
@@ -45,6 +50,10 @@ namespace ShopApi.Data
                 .WithMany()
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<WarrantyRecord>()
+                .HasIndex(x => x.SerialNumber)
+                .IsUnique();
         }
     }
 }

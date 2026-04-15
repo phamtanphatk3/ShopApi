@@ -2,8 +2,8 @@
 {
     public class UploadImageDto
     {
-        public IFormFile File { get; set; }
-        public bool IsPrimary { get; set; }
+        public IFormFile File { get; set; } = null!;
+        public bool IsMain { get; set; }
         public int SortOrder { get; set; }
     }
 }

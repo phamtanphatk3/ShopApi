@@ -44,12 +44,24 @@ namespace ShopApi
             builder.Services.AddScoped<InstallmentService>();
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<ReportService>();
+            builder.Services.AddScoped<PromotionService>();
+            builder.Services.AddScoped<WarrantyService>();
 
             builder.Services.AddHttpContextAccessor();
 
             // ================= CONTROLLER =================
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("FrontendPolicy", policy =>
+                {
+                    policy
+                        .WithOrigins("http://localhost:3000", "http://192.168.1.21:3000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
 
             // Swagger + JWT Bearer support
             builder.Services.AddSwaggerGen(options =>
@@ -145,6 +157,7 @@ namespace ShopApi
             });
 
             app.UseStaticFiles();
+            app.UseCors("FrontendPolicy");
 
             // 🔥 QUAN TRỌNG: thứ tự này KHÔNG được sai
             app.UseAuthentication();
