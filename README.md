@@ -90,7 +90,6 @@ Quyen truy cap:
 
 ## 7. Tai lieu test API
 - Bai 15 checklist: `D:\ShopApi\BAI15_TEST.md`
-- Bai 16 checklist: `D:\ShopApi\BAI16_TEST.md`
 
 ## 8. Ghi chu
 - De reset du lieu cu:
