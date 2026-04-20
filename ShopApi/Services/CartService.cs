@@ -18,6 +18,7 @@ namespace ShopApi.Services
             _http = http;
         }
 
+        // Lay userId hien tai tu claims trong access token.
         private int GetCurrentUserId()
         {
             var userIdClaim = _http.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
@@ -27,7 +28,7 @@ namespace ShopApi.Services
             return int.Parse(userIdClaim.Value);
         }
 
-        // Get existing cart or create a new cart for current user
+        // Lay gio hang cua user; neu chua co thi tao gio hang moi.
         private async Task<Cart> GetCart(int userId)
         {
             var cart = await _context.Carts
@@ -49,7 +50,7 @@ namespace ShopApi.Services
             return cart;
         }
 
-        // Add item to cart
+        // Them san pham vao gio hang va cap nhat so luong/ don gia.
         public async Task AddToCart(AddToCartDto dto)
         {
             if (dto.Quantity <= 0)
@@ -90,7 +91,7 @@ namespace ShopApi.Services
             await _context.SaveChangesAsync();
         }
 
-        // Update item quantity
+        // Cap nhat so luong cua mot item trong gio hang.
         public async Task UpdateItem(int itemId, int quantity)
         {
             if (quantity <= 0)
@@ -113,7 +114,7 @@ namespace ShopApi.Services
             await _context.SaveChangesAsync();
         }
 
-        // Remove item
+        // Xoa item khoi gio hang.
         public async Task RemoveItem(int itemId)
         {
             var userId = GetCurrentUserId();
@@ -128,7 +129,7 @@ namespace ShopApi.Services
             await _context.SaveChangesAsync();
         }
 
-        // Get cart detail
+        // Lay chi tiet gio hang de tra ve cho API.
         public async Task<CartResponseDto> GetCartDetail()
         {
             var userId = GetCurrentUserId();

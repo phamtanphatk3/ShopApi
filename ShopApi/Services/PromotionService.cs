@@ -14,6 +14,7 @@ namespace ShopApi.Services
             _context = context;
         }
 
+        // Tao chuong trinh khuyen mai moi.
         public async Task<Promotion> CreateAsync(PromotionDto dto)
         {
             var discountType = dto.DiscountType;
@@ -38,7 +39,8 @@ namespace ShopApi.Services
             return promo;
         }
 
-        public async Task AssignAsync(int promoId, int productId)
+        // Gan khuyen mai vao san pham.
+        public async Task<object> AssignAsync(int promoId, int productId)
         {
             var promotionExists = await _context.Promotions.AnyAsync(x => x.Id == promoId);
             if (!promotionExists)
@@ -61,6 +63,12 @@ namespace ShopApi.Services
 
             _context.ProductPromotions.Add(map);
             await _context.SaveChangesAsync();
+
+            return new
+            {
+                map.ProductId,
+                map.PromotionId
+            };
         }
     }
 }

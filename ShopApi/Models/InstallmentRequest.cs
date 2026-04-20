@@ -1,5 +1,6 @@
-namespace ShopApi.Models
+﻿namespace ShopApi.Models
 {
+    // Mo hinh du lieu InstallmentRequest.
     public class InstallmentRequest
     {
         public int Id { get; set; }
@@ -19,3 +20,4 @@ namespace ShopApi.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }
+

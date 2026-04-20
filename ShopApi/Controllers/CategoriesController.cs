@@ -17,6 +17,7 @@ namespace ShopApi.Controllers
             _service = service;
         }
 
+        // Lay danh sach danh muc.
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -30,6 +31,7 @@ namespace ShopApi.Controllers
             });
         }
 
+        // Lay chi tiet danh muc theo id.
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -50,45 +52,48 @@ namespace ShopApi.Controllers
             });
         }
 
+        // Tao danh muc moi (chi Admin/Staff).
         [Authorize(Roles = "Admin,Staff")]
         [HttpPost]
         public async Task<IActionResult> Create(CategoryCreateDto dto)
         {
-            await _service.CreateAsync(dto);
+            var data = await _service.CreateAsync(dto);
 
-            return Ok(new ApiResponse<string>
+            return Ok(new ApiResponse<CategoryResponseDto>
             {
                 Success = true,
                 Message = "Tao thanh cong",
-                Data = null
+                Data = data
             });
         }
 
+        // Cap nhat danh muc theo id (chi Admin/Staff).
         [Authorize(Roles = "Admin,Staff")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, CategoryUpdateDto dto)
         {
-            await _service.UpdateAsync(id, dto);
+            var data = await _service.UpdateAsync(id, dto);
 
-            return Ok(new ApiResponse<string>
+            return Ok(new ApiResponse<CategoryResponseDto>
             {
                 Success = true,
                 Message = "Cap nhat thanh cong",
-                Data = null
+                Data = data
             });
         }
 
+        // Xoa mem danh muc theo id (chi Admin/Staff).
         [Authorize(Roles = "Admin,Staff")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _service.DeleteAsync(id);
+            var data = await _service.DeleteAsync(id);
 
-            return Ok(new ApiResponse<string>
+            return Ok(new ApiResponse<object>
             {
                 Success = true,
                 Message = "Xoa thanh cong",
-                Data = null
+                Data = data
             });
         }
     }

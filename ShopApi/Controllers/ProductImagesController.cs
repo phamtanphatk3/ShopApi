@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
+ï»¿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ShopApi.Common;
 using ShopApi.DTOs.ProductImage;
 using ShopApi.Services;
 
@@ -16,22 +17,33 @@ namespace ShopApi.Controllers
             _service = service;
         }
 
-        // ? Upload ?nh
+        // Upload anh cho san pham va tra ve danh sach anh sau khi cap nhat.
         [Authorize(Roles = "Admin,Staff")]
         [HttpPost]
         public async Task<IActionResult> Upload(int productId, [FromForm] UploadImageDto dto)
         {
             await _service.UploadAsync(productId, dto);
-            return Ok(new { message = "Upload thành công" });
+            var data = await _service.GetImagesAsync(productId);
+
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Upload thanh cong",
+                Data = data
+            });
         }
 
-        // ? L?y ?nh (d? test)
+        // Lay danh sach anh cua san pham.
         [HttpGet]
         public async Task<IActionResult> GetImages(int productId)
         {
             var data = await _service.GetImagesAsync(productId);
-            return Ok(data);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Success",
+                Data = data
+            });
         }
     }
-
 }

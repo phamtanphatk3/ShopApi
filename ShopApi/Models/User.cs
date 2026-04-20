@@ -1,5 +1,6 @@
 ﻿namespace ShopApi.Models
 {
+    // Mo hinh du lieu User.
     public class User
     {
         public int Id { get; set; }
@@ -8,3 +9,4 @@
         public string Role { get; set; } = string.Empty;
     }
 }
+

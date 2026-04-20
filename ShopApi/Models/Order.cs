@@ -1,5 +1,6 @@
-namespace ShopApi.Models
+﻿namespace ShopApi.Models
 {
+    // Mo hinh du lieu Order.
     public class Order
     {
         public int Id { get; set; }
@@ -13,3 +14,4 @@ namespace ShopApi.Models
         public User User { get; set; } = null!;
     }
 }
+

@@ -1,5 +1,6 @@
 ﻿namespace ShopApi.Models
 {
+    // Mo hinh du lieu StoreInventory.
     public class StoreInventory
     {
         public int Id { get; set; }
@@ -13,3 +14,4 @@
         public int Quantity { get; set; }
     }
 }
+

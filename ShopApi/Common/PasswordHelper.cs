@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 
 namespace ShopApi.Common
 {
+    // Ham tien ich de hash va xac thuc mat khau.
     public static class PasswordHelper
     {
         private const int SaltSize = 16;
@@ -9,6 +10,7 @@ namespace ShopApi.Common
         private const int Iterations = 100_000;
         private const string Prefix = "PBKDF2";
 
+        // Tao chuoi hash PBKDF2 tu mat khau thuong.
         public static string HashPassword(string password)
         {
             var salt = RandomNumberGenerator.GetBytes(SaltSize);
@@ -22,6 +24,7 @@ namespace ShopApi.Common
             return $"{Prefix}${Iterations}${Convert.ToBase64String(salt)}${Convert.ToBase64String(key)}";
         }
 
+        // Kiem tra mat khau dau vao co khop voi mat khau da luu hay khong.
         public static bool VerifyPassword(string password, string storedPassword)
         {
             if (string.IsNullOrWhiteSpace(storedPassword))
@@ -29,7 +32,7 @@ namespace ShopApi.Common
 
             if (!storedPassword.StartsWith($"{Prefix}$", StringComparison.Ordinal))
             {
-                // Backward compatibility: old plaintext passwords in existing DB
+                // Tuong thich nguoc voi du lieu mat khau plaintext cu trong DB.
                 return password == storedPassword;
             }
 
@@ -53,6 +56,7 @@ namespace ShopApi.Common
             return CryptographicOperations.FixedTimeEquals(key, storedKey);
         }
 
+        // Kiem tra gia tri luu trong DB da o dinh dang hash hay chua.
         public static bool IsHashed(string storedPassword)
             => !string.IsNullOrWhiteSpace(storedPassword)
                && storedPassword.StartsWith($"{Prefix}$", StringComparison.Ordinal);

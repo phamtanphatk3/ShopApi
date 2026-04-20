@@ -18,19 +18,21 @@ namespace ShopApi.Controllers
             _service = service;
         }
 
-        // ================= ADD TO CART =================
+        // Them san pham vao gio hang cua khach hang hien tai va tra ve gio hang sau khi cap nhat.
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] AddToCartDto dto)
         {
             await _service.AddToCart(dto);
-            return Ok(new ApiResponse<string>
+            var data = await _service.GetCartDetail();
+            return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Added to cart"
+                Message = "Added to cart",
+                Data = data
             });
         }
 
-        // ================= GET CART =================
+        // Lay chi tiet gio hang cua khach hang hien tai.
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -43,27 +45,31 @@ namespace ShopApi.Controllers
             });
         }
 
-        // ================= UPDATE =================
+        // Cap nhat so luong cho mot item trong gio hang cua khach hang hien tai.
         [HttpPut]
         public async Task<IActionResult> Update(int itemId, int quantity)
         {
             await _service.UpdateItem(itemId, quantity);
-            return Ok(new ApiResponse<string>
+            var data = await _service.GetCartDetail();
+            return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Updated"
+                Message = "Updated",
+                Data = data
             });
         }
 
-        // ================= DELETE =================
+        // Xoa mot item khoi gio hang cua khach hang hien tai.
         [HttpDelete]
         public async Task<IActionResult> Remove(int itemId)
         {
             await _service.RemoveItem(itemId);
-            return Ok(new ApiResponse<string>
+            var data = await _service.GetCartDetail();
+            return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Removed"
+                Message = "Removed",
+                Data = data
             });
         }
     }

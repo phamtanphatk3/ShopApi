@@ -1,16 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ShopApi.Common;
 using ShopApi.Data;
 using ShopApi.DTOs.Order;
 using ShopApi.Services;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 
 namespace ShopApi.Controllers
 {
     [ApiController]
     [Route("api/orders")]
-    [Authorize] // 🔥 tất cả API đều cần login
+    [Authorize]
     public class OrdersController : ControllerBase
     {
         private readonly OrderService _service;
@@ -22,35 +23,40 @@ namespace ShopApi.Controllers
             _context = context;
         }
 
-        // ================= CREATE ORDER =================
+        // Tao don hang tu gio hang cua khach hang.
         [Authorize(Roles = "Customer")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateOrderRequestDto? dto)
         {
             var data = await _service.CreateOrder(dto?.CouponCode);
-            return Ok(data);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Created",
+                Data = data
+            });
         }
 
-        // ================= UPDATE STATUS =================
+        // Cap nhat trang thai don hang (chi Admin/Staff).
         [Authorize(Roles = "Admin,Staff")]
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromQuery] string status)
         {
-            await _service.UpdateStatus(id, status);
-
-            return Ok(new
+            var data = await _service.UpdateStatus(id, status);
+            return Ok(new ApiResponse<object>
             {
-                message = "Updated"
+                Success = true,
+                Message = "Updated",
+                Data = data
             });
         }
 
-        // ================= CUSTOMER XEM ĐƠN CỦA MÌNH =================
+        // Lay danh sach don hang cua khach hang dang dang nhap.
         [Authorize(Roles = "Customer")]
         [HttpGet]
         public async Task<IActionResult> GetMyOrders()
         {
-            var userId = int.Parse(
-                User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
             var orders = await _context.Orders
                 .Include(o => o.Items)
@@ -73,10 +79,15 @@ namespace ShopApi.Controllers
                 })
                 .ToListAsync();
 
-            return Ok(orders);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Success",
+                Data = orders
+            });
         }
 
-        // ================= ADMIN / STAFF XEM TẤT CẢ =================
+        // Lay tat ca don hang (chi Admin/Staff).
         [Authorize(Roles = "Admin,Staff")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
@@ -95,16 +106,19 @@ namespace ShopApi.Controllers
                 })
                 .ToListAsync();
 
-            return Ok(orders);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Success",
+                Data = orders
+            });
         }
 
-        // ================= XEM CHI TIẾT =================
+        // Lay chi tiet don hang theo id va kiem tra quyen truy cap.
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var userId = int.Parse(
-                User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
             var order = await _context.Orders
@@ -113,13 +127,19 @@ namespace ShopApi.Controllers
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
-                return NotFound("Order not found");
+            {
+                return NotFound(new ApiResponse<string?>
+                {
+                    Success = false,
+                    Message = "Order not found",
+                    Data = null
+                });
+            }
 
-            // 🔥 CUSTOMER chỉ được xem đơn của mình
             if (role == "Customer" && order.UserId != userId)
                 return Forbid();
 
-            return Ok(new
+            var data = new
             {
                 order.Id,
                 order.OrderCode,
@@ -135,6 +155,13 @@ namespace ShopApi.Controllers
                     i.UnitPrice,
                     i.LineTotal
                 })
+            };
+
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Success",
+                Data = data
             });
         }
     }

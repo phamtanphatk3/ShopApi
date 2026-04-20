@@ -13,6 +13,7 @@ namespace ShopApi.Services
             _context = context;
         }
 
+        // Tao yeu cau tra gop va tinh so tien tra truoc, tra hang thang.
         public async Task<object> Create(InstallmentCreateDto dto)
         {
             var product = await _context.Products.FindAsync(dto.ProductId);
@@ -20,13 +21,13 @@ namespace ShopApi.Services
 
             var price = product.Price;
 
-            // Tinh tra truoc
+            // Tinh so tien tra truoc.
             var downPayment = price * dto.DownPaymentPercent / 100;
 
-            // So tien con lai
+            // Tinh so tien con lai sau khi tra truoc.
             var remaining = price - downPayment;
 
-            // Gop moi thang
+            // Tinh so tien tra moi thang.
             var monthly = remaining / dto.Months;
 
             var request = new InstallmentRequest

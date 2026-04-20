@@ -6,8 +6,8 @@ namespace ShopApi.Services.Interfaces
     {
         Task<List<CategoryResponseDto>> GetAllAsync();
         Task<CategoryResponseDto?> GetByIdAsync(int id);
-        Task CreateAsync(CategoryCreateDto dto);
-        Task UpdateAsync(int id, CategoryUpdateDto dto);
-        Task DeleteAsync(int id);
+        Task<CategoryResponseDto> CreateAsync(CategoryCreateDto dto);
+        Task<CategoryResponseDto> UpdateAsync(int id, CategoryUpdateDto dto);
+        Task<object> DeleteAsync(int id);
     }
 }

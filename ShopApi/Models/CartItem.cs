@@ -1,5 +1,6 @@
 ﻿namespace ShopApi.Models
 {
+    // Mo hinh du lieu CartItem.
     public class CartItem
     {
         public int Id { get; set; }
@@ -14,3 +15,4 @@
         public decimal UnitPrice { get; set; }
     }
 }
+

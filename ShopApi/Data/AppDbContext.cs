@@ -3,6 +3,7 @@ using ShopApi.Models;
 
 namespace ShopApi.Data
 {
+    // DbContext trung tam quan ly bang du lieu va mapping quan he.
     public class AppDbContext : DbContext
     {
         public DbSet<Category> Categories { get; set; }
@@ -24,6 +25,8 @@ namespace ShopApi.Data
         public DbSet<WarrantyRecord> WarrantyRecords { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public DbSet<User> Users { get; set; }
+
+        // Cau hinh quan he, index va seed du lieu ban dau.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Category>()
@@ -32,7 +35,7 @@ namespace ShopApi.Data
                 .HasForeignKey(c => c.ParentCategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Seed data
+            // Seed du lieu danh muc mac dinh.
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "Điện thoại", Slug = "dien-thoai" },
                 new Category { Id = 2, Name = "Laptop", Slug = "laptop" }

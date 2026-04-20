@@ -17,6 +17,7 @@ namespace ShopApi.Controllers
             _service = service;
         }
 
+        // Tao phieu bao hanh moi (chi Admin/Staff).
         [Authorize(Roles = "Admin,Staff")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateWarrantyDto dto)
@@ -30,6 +31,7 @@ namespace ShopApi.Controllers
             });
         }
 
+        // Tra cuu bao hanh theo serial, so dien thoai hoac ma don.
         [AllowAnonymous]
         [HttpGet("lookup")]
         public async Task<IActionResult> Lookup(

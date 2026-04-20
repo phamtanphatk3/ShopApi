@@ -1,5 +1,6 @@
 ﻿namespace ShopApi.Common
 {
+    // Dinh dang response chung cho API thanh cong.
     public class ApiResponse<T>
     {
         public bool Success { get; set; }

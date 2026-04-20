@@ -1,5 +1,6 @@
 namespace ShopApi.Common
 {
+    // Dinh dang du lieu loi tra ve tu middleware exception.
     public class ApiErrorResponse
     {
         public bool Success { get; set; } = false;

@@ -17,6 +17,7 @@ namespace ShopApi.Controllers
             _service = service;
         }
 
+        // Bao cao doanh thu theo ngay.
         [HttpGet("revenue/daily")]
         public async Task<IActionResult> RevenueByDay([FromQuery] DateTime? from, [FromQuery] DateTime? to)
         {
@@ -29,6 +30,7 @@ namespace ShopApi.Controllers
             });
         }
 
+        // Bao cao doanh thu theo thang.
         [HttpGet("revenue/monthly")]
         public async Task<IActionResult> RevenueByMonth([FromQuery] DateTime? from, [FromQuery] DateTime? to)
         {
@@ -41,6 +43,7 @@ namespace ShopApi.Controllers
             });
         }
 
+        // Lay top san pham ban chay.
         [HttpGet("top-selling-products")]
         public async Task<IActionResult> TopSellingProducts([FromQuery] int top = 5)
         {
@@ -53,6 +56,7 @@ namespace ShopApi.Controllers
             });
         }
 
+        // Thong ke don hang theo trang thai.
         [HttpGet("orders-by-status")]
         public async Task<IActionResult> OrdersByStatus()
         {
@@ -65,6 +69,7 @@ namespace ShopApi.Controllers
             });
         }
 
+        // Lay danh sach san pham sap het hang.
         [HttpGet("low-stock")]
         public async Task<IActionResult> LowStock([FromQuery] int threshold = 5)
         {

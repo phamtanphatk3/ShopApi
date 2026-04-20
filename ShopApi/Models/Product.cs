@@ -1,5 +1,6 @@
 ﻿namespace ShopApi.Models
 {
+    // Mo hinh du lieu Product.
     public class Product
     {
         public int Id { get; set; }
@@ -22,3 +23,4 @@
         public List<ProductRegionPrice> RegionPrices { get; set; } = new();
     }
 }
+

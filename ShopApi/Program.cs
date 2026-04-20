@@ -1,39 +1,46 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using ShopApi.Common.Auth;
 using ShopApi.Data;
 using ShopApi.Middlewares;
 using ShopApi.Repositories;
 using ShopApi.Repositories.Interfaces;
 using ShopApi.Services;
 using ShopApi.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using ShopApi.Validators;
 using System.Text;
-using Microsoft.OpenApi;
 
 
 namespace ShopApi
 {
+    // Diem khoi dong chinh cua ung dung ASP.NET Core.
     public class Program
     {
+        // Cau hinh DI, middleware, auth, swagger va chay web app.
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Keep logging simple in dev/runtime to avoid Windows EventLog permission issues.
+            // Cau hinh logging don gian de tranh loi quyen EventLog tren Windows.
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
             builder.Logging.AddDebug();
 
-            // ================= DB =================
+            // Dang ky DbContext ket noi SQL Server.
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("Default")));
 
-            // ================= REPOSITORY =================
+            // Dang ky repository.
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
-            // ================= SERVICE =================
+            // Dang ky service nghiep vu.
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IProductService, ProductService>();
 
@@ -49,21 +56,30 @@ namespace ShopApi
 
             builder.Services.AddHttpContextAccessor();
 
-            // ================= CONTROLLER =================
+            // Dang ky controller va FluentValidation.
             builder.Services.AddControllers();
+            builder.Services.AddFluentValidationAutoValidation(options =>
+            {
+                options.DisableDataAnnotationsValidation = true;
+            });
+            builder.Services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
             builder.Services.AddEndpointsApiExplorer();
+
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("FrontendPolicy", policy =>
+                options.AddPolicy("Frontend", policy =>
                 {
                     policy
-                        .WithOrigins("http://localhost:3000", "http://192.168.1.21:3000")
+                        .WithOrigins(
+                            "http://localhost:3000",
+                            "http://192.168.1.21:3000",
+                            "http://192.168.1.26:3000")
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });
             });
 
-            // Swagger + JWT Bearer support
+            // Cau hinh Swagger va co che Authorize token.
             builder.Services.AddSwaggerGen(options =>
             {
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -86,70 +102,76 @@ namespace ShopApi
                 });
             });
 
-            // ================= JWT =================
-            var key = builder.Configuration["Jwt:Key"];
+            // Cau hinh auth: DevAuth khi development (neu bat), nguoc lai dung JWT.
+            var bypassAuthInDevelopment =
+                builder.Environment.IsDevelopment() &&
+                builder.Configuration.GetValue<bool>("Auth:BypassEnabled");
 
-            if (string.IsNullOrEmpty(key) || key.Length < 32)
-                throw new Exception("JWT Key must be at least 32 characters");
+            if (bypassAuthInDevelopment)
+            {
+                builder.Services
+                    .AddAuthentication("DevAuth")
+                    .AddScheme<AuthenticationSchemeOptions, DevAuthHandler>("DevAuth", _ => { });
+            }
+            else
+            {
+                var key = builder.Configuration["Jwt:Key"];
 
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.RequireHttpsMetadata = false; // dev
-                    options.SaveToken = true;
-                    options.IncludeErrorDetails = true;
+                if (string.IsNullOrEmpty(key) || key.Length < 32)
+                    throw new Exception("JWT Key must be at least 32 characters");
 
-                    options.Events = new JwtBearerEvents
+                builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
                     {
-                        OnMessageReceived = context =>
+                        options.RequireHttpsMetadata = false; // Chi dung cho moi truong development.
+                        options.SaveToken = true;
+                        options.IncludeErrorDetails = true;
+
+                        options.Events = new JwtBearerEvents
                         {
-                            var authHeader = context.Request.Headers.Authorization.ToString();
-                            if (string.IsNullOrWhiteSpace(authHeader))
-                                return Task.CompletedTask;
-
-                            // Swagger/UI thường thêm "Bearer " tự động.
-                            // Hỗ trợ cả trường hợp người dùng lỡ nhập "Bearer <token>" vào ô Authorize.
-                            if (authHeader.StartsWith("Bearer Bearer ", StringComparison.OrdinalIgnoreCase))
+                            OnMessageReceived = context =>
                             {
-                                context.Token = authHeader["Bearer Bearer ".Length..].Trim();
+                                var authHeader = context.Request.Headers.Authorization.ToString();
+                                if (string.IsNullOrWhiteSpace(authHeader))
+                                    return Task.CompletedTask;
+
+                                if (authHeader.StartsWith("Bearer Bearer ", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    context.Token = authHeader["Bearer Bearer ".Length..].Trim();
+                                    return Task.CompletedTask;
+                                }
+
+                                if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    context.Token = authHeader["Bearer ".Length..].Trim();
+                                    return Task.CompletedTask;
+                                }
+
+                                context.Token = authHeader.Trim();
                                 return Task.CompletedTask;
                             }
+                        };
 
-                            if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-                            {
-                                context.Token = authHeader["Bearer ".Length..].Trim();
-                                return Task.CompletedTask;
-                            }
-
-                            // Fallback: nếu header không có prefix, dùng trực tiếp giá trị đó.
-                            context.Token = authHeader.Trim();
-                            return Task.CompletedTask;
-                        }
-                    };
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateIssuerSigningKey = true,
-                        ValidateLifetime = true,
-
-                        ClockSkew = TimeSpan.Zero, // 🔥 hết hạn là hết hạn luôn
-
-                        IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(key))
-                    };
-                });
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = false,
+                            ValidateAudience = false,
+                            ValidateIssuerSigningKey = true,
+                            ValidateLifetime = true,
+                            ClockSkew = TimeSpan.Zero,
+                            IssuerSigningKey = new SymmetricSecurityKey(
+                                Encoding.UTF8.GetBytes(key))
+                        };
+                    });
+            }
 
             builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
-            // ================= MIDDLEWARE =================
-
+            // Cau hinh middleware pipeline.
             app.UseMiddleware<ExceptionMiddleware>();
 
-            // 👉 Swagger
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
@@ -157,9 +179,8 @@ namespace ShopApi
             });
 
             app.UseStaticFiles();
-            app.UseCors("FrontendPolicy");
+            app.UseCors("Frontend");
 
-            // 🔥 QUAN TRỌNG: thứ tự này KHÔNG được sai
             app.UseAuthentication();
             app.UseAuthorization();
 

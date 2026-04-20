@@ -1,5 +1,6 @@
 ﻿namespace ShopApi.DTOs.Product
 {
+    // DTO trao doi du lieu ProductDetailDto.
     public class ProductDetailDto
     {
         public int Id { get; set; }
@@ -14,3 +15,4 @@
         public List<RelatedProductDto> RelatedProducts { get; set; } = new();
     }
 }
+

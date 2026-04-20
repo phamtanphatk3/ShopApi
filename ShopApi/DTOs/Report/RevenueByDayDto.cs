@@ -1,5 +1,6 @@
-namespace ShopApi.DTOs.Report
+﻿namespace ShopApi.DTOs.Report
 {
+    // DTO trao doi du lieu RevenueByDayDto.
     public class RevenueByDayDto
     {
         public DateTime Date { get; set; }
@@ -7,3 +8,4 @@ namespace ShopApi.DTOs.Report
         public int OrderCount { get; set; }
     }
 }
+

@@ -1,5 +1,6 @@
 ﻿namespace ShopApi.DTOs.Product
 {
+    // DTO trao doi du lieu ProductQuery.
     public class ProductQuery
     {
         public string? Keyword { get; set; }
@@ -15,3 +16,4 @@
         public int PageSize { get; set; } = 10;
     }
 }
+

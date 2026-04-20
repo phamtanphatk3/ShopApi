@@ -16,7 +16,7 @@ namespace ShopApi.Services
             _env = env;
         }
 
-        // ✅ Upload nhiều ảnh + xử lý ảnh đại diện
+        // Upload nhieu anh va xu ly anh dai dien
         public async Task UploadAsync(int productId, UploadImageDto dto)
         {
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(dto.File.FileName);
@@ -27,7 +27,7 @@ namespace ShopApi.Services
                 await dto.File.CopyToAsync(stream);
             }
 
-            // 🔥 Nếu là ảnh đại diện → tắt tất cả ảnh cũ
+            // Neu la anh dai dien thi tat tat ca anh cu
             if (dto.IsMain)
             {
                 var oldImages = await _context.ProductImages
@@ -52,7 +52,7 @@ namespace ShopApi.Services
             await _context.SaveChangesAsync();
         }
 
-        // ✅ Lấy danh sách ảnh (có sort)
+        // Lay danh sach anh theo thu tu sort
         public async Task<List<ProductImageResponseDto>> GetImagesAsync(int productId)
         {
             return await _context.ProductImages

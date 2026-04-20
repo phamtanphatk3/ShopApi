@@ -13,6 +13,7 @@ namespace ShopApi.Services
             _context = context;
         }
 
+        // Bao cao doanh thu theo ngay trong khoang thoi gian.
         public async Task<List<RevenueByDayDto>> GetRevenueByDay(DateTime? from, DateTime? to)
         {
             var query = _context.Orders.AsQueryable();
@@ -30,6 +31,7 @@ namespace ShopApi.Services
                 .ToListAsync();
         }
 
+        // Bao cao doanh thu theo thang trong khoang thoi gian.
         public async Task<List<RevenueByMonthDto>> GetRevenueByMonth(DateTime? from, DateTime? to)
         {
             var query = _context.Orders.AsQueryable();
@@ -49,6 +51,7 @@ namespace ShopApi.Services
                 .ToListAsync();
         }
 
+        // Lay danh sach top san pham ban chay.
         public async Task<List<TopSellingProductDto>> GetTopSellingProducts(int top)
         {
             if (top <= 0) top = 5;
@@ -72,6 +75,7 @@ namespace ShopApi.Services
                 .ToListAsync();
         }
 
+        // Thong ke so luong don va doanh thu theo trang thai.
         public async Task<List<OrderStatusSummaryDto>> GetOrderStatusSummary()
         {
             return await _context.Orders
@@ -86,6 +90,7 @@ namespace ShopApi.Services
                 .ToListAsync();
         }
 
+        // Lay danh sach san pham ton kho thap theo nguong.
         public async Task<List<LowStockProductDto>> GetLowStockProducts(int threshold)
         {
             if (threshold < 0) threshold = 0;
@@ -104,6 +109,7 @@ namespace ShopApi.Services
                 .ToListAsync();
         }
 
+        // Ap dung bo loc ngay bat dau/ket thuc cho truy van don hang.
         private static IQueryable<Models.Order> ApplyDateRange(
             IQueryable<Models.Order> query,
             DateTime? from,

@@ -1,5 +1,6 @@
 ﻿namespace ShopApi.DTOs.Product
 {
+    // DTO trao doi du lieu ProductResponseDto.
     public class ProductResponseDto
     {
         public int Id { get; set; }
@@ -11,3 +12,4 @@
         public int StockQuantity { get; set; }
     }
 }
+

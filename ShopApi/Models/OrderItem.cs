@@ -1,5 +1,6 @@
-namespace ShopApi.Models
+﻿namespace ShopApi.Models
 {
+    // Mo hinh du lieu OrderItem.
     public class OrderItem
     {
         public int Id { get; set; }
@@ -12,3 +13,4 @@ namespace ShopApi.Models
         public decimal LineTotal { get; set; }
     }
 }
+

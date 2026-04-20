@@ -1,5 +1,6 @@
-namespace ShopApi.DTOs.Report
+﻿namespace ShopApi.DTOs.Report
 {
+    // DTO trao doi du lieu TopSellingProductDto.
     public class TopSellingProductDto
     {
         public int ProductId { get; set; }
@@ -9,3 +10,4 @@ namespace ShopApi.DTOs.Report
         public decimal Revenue { get; set; }
     }
 }
+

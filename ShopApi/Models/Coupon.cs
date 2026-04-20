@@ -1,5 +1,6 @@
-namespace ShopApi.Models
+﻿namespace ShopApi.Models
 {
+    // Mo hinh du lieu Coupon.
     public class Coupon
     {
         public int Id { get; set; }
@@ -13,3 +14,4 @@ namespace ShopApi.Models
         public DateTime EndDate { get; set; }
     }
 }
+

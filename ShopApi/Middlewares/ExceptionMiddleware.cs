@@ -3,6 +3,7 @@ using System.Net;
 
 namespace ShopApi.Middlewares
 {
+    // Middleware bat exception toan cuc va tra ve response loi theo format chung.
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
@@ -14,6 +15,7 @@ namespace ShopApi.Middlewares
             _logger = logger;
         }
 
+        // Xu ly request tiep theo; neu co loi thi map status code va ghi log.
         public async Task Invoke(HttpContext context)
         {
             try
@@ -60,6 +62,7 @@ namespace ShopApi.Middlewares
             }
         }
 
+        // Quy doi exception sang HTTP status code phu hop.
         private static HttpStatusCode ResolveStatusCode(Exception ex)
         {
             if (ex is UnauthorizedAccessException)

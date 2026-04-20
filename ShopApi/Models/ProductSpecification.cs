@@ -1,5 +1,6 @@
 ﻿namespace ShopApi.Models
 {
+    // Mo hinh du lieu ProductSpecification.
     public class ProductSpecification
     {
         public int Id { get; set; }
@@ -11,3 +12,4 @@
         public string Value { get; set; } = string.Empty;   // VD: 8GB
     }
 }
+

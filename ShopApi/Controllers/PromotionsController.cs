@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ShopApi.Common;
 using ShopApi.DTOs.ProductImage;
 using ShopApi.Services;
 
@@ -17,18 +18,30 @@ namespace ShopApi.Controllers
             _service = service;
         }
 
+        // Tao chuong trinh khuyen mai.
         [HttpPost]
         public async Task<IActionResult> Create(PromotionDto dto)
         {
             var promo = await _service.CreateAsync(dto);
-            return Ok(promo);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Created",
+                Data = promo
+            });
         }
 
+        // Gan khuyen mai vao san pham.
         [HttpPost("{promoId}/products/{productId}")]
         public async Task<IActionResult> Assign(int promoId, int productId)
         {
-            await _service.AssignAsync(promoId, productId);
-            return Ok("Gán thành công");
+            var data = await _service.AssignAsync(promoId, productId);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Gan thanh cong",
+                Data = data
+            });
         }
     }
 }

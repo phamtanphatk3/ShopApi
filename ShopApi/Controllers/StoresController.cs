@@ -15,7 +15,7 @@ namespace ShopApi.Controllers
             _context = context;
         }
 
-        // 🔥 1. TÌM THEO TỈNH
+        // Tim danh sach cua hang theo tinh.
         [HttpGet("by-province")]
         public async Task<IActionResult> GetByProvince(string province)
         {
@@ -26,7 +26,7 @@ namespace ShopApi.Controllers
             return Ok(data);
         }
 
-        // 🔥 2. TÌM STORE GẦN NHẤT
+        // Tim cac cua hang gan nhat theo vi do, kinh do.
         [HttpGet("nearest")]
         public async Task<IActionResult> GetNearest(double lat, double lng)
         {
@@ -45,7 +45,7 @@ namespace ShopApi.Controllers
             return Ok(result);
         }
 
-        // 🔥 3. CHECK CÒN HÀNG
+        // Kiem tra cua hang con ton kho theo san pham.
         [HttpGet("has-product")]
         public async Task<IActionResult> HasProduct(int productId)
         {
@@ -63,7 +63,7 @@ namespace ShopApi.Controllers
             return Ok(data);
         }
 
-        // 🔥 HÀM TÍNH KHOẢNG CÁCH
+        // Tinh khoang cach giua hai toa do theo cong thuc Haversine.
         private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
         {
             var R = 6371;

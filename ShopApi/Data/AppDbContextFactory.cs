@@ -3,8 +3,10 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace ShopApi.Data
 {
+    // Factory tao AppDbContext luc chay migration design-time.
     public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
+        // Tao DbContext tu appsettings de phuc vu lenh EF Core.
         public AppDbContext CreateDbContext(string[] args)
         {
             var basePath = Directory.GetCurrentDirectory();

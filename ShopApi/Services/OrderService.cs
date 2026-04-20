@@ -18,6 +18,7 @@ namespace ShopApi.Services
             _http = http;
         }
 
+        // Tao don hang tu gio hang cua user, co xu ly coupon va tru ton kho.
         public async Task<OrderResponseDto> CreateOrder(string? couponCode = null)
         {
             var userIdClaim = _http.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
@@ -38,6 +39,7 @@ namespace ShopApi.Services
                 if (cart == null || !cart.Items.Any())
                     throw new Exception("Cart is empty");
 
+                // Kiem tra ton kho cho tung item truoc khi tao don.
                 foreach (var item in cart.Items)
                 {
                     if (item.Product == null)
@@ -47,6 +49,7 @@ namespace ShopApi.Services
                         throw new Exception($"Product {item.Product.Name} out of stock");
                 }
 
+                // Kiem tra tinh hop le cua coupon neu co ap dung.
                 Coupon? coupon = null;
 
                 if (!string.IsNullOrWhiteSpace(couponCode))
@@ -68,6 +71,7 @@ namespace ShopApi.Services
                 if (user == null)
                     throw new Exception("User not found");
 
+                // Tao don va tao danh sach order item tu cart item.
                 var order = new Order
                 {
                     UserId = userId,
@@ -101,6 +105,7 @@ namespace ShopApi.Services
                     });
                 }
 
+                // Tinh tong tien don va ap dung coupon neu hop le.
                 order.FinalAmount = order.Items.Sum(x => x.LineTotal);
 
                 if (coupon != null)
@@ -123,6 +128,7 @@ namespace ShopApi.Services
                     coupon.UsedCount++;
                 }
 
+                // Luu don, xoa gio hang va commit giao dich.
                 _context.Orders.Add(order);
                 _context.CartItems.RemoveRange(cart.Items);
 
@@ -150,7 +156,8 @@ namespace ShopApi.Services
             }
         }
 
-        public async Task UpdateStatus(int orderId, string status)
+        // Cap nhat trang thai don hang theo danh sach trang thai hop le.
+        public async Task<object> UpdateStatus(int orderId, string status)
         {
             var order = await _context.Orders.FindAsync(orderId);
 
@@ -167,6 +174,15 @@ namespace ShopApi.Services
 
             order.Status = status;
             await _context.SaveChangesAsync();
+
+            return new
+            {
+                order.Id,
+                order.OrderCode,
+                order.Status,
+                order.FinalAmount,
+                order.CreatedAt
+            };
         }
     }
 }

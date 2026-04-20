@@ -2,6 +2,7 @@
 
 namespace ShopApi.Repositories.Interfaces
 {
+    // Hop dong truy cap du lieu danh muc.
     public interface ICategoryRepository
     {
         Task<List<Category>> GetAllAsync();

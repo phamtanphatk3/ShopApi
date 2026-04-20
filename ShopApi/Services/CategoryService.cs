@@ -15,6 +15,7 @@ namespace ShopApi.Services
             _repo = repo;
         }
 
+        // Lay danh sach danh muc va map sang DTO.
         public async Task<List<CategoryResponseDto>> GetAllAsync()
         {
             var data = await _repo.GetAllAsync();
@@ -23,10 +24,13 @@ namespace ShopApi.Services
             {
                 Id = c.Id,
                 Name = c.Name,
-                Slug = c.Slug
+                Slug = c.Slug,
+                ParentCategoryId = c.ParentCategoryId,
+                IsActive = c.IsActive
             }).ToList();
         }
 
+        // Lay chi tiet danh muc theo id.
         public async Task<CategoryResponseDto?> GetByIdAsync(int id)
         {
             var c = await _repo.GetByIdAsync(id);
@@ -36,11 +40,14 @@ namespace ShopApi.Services
             {
                 Id = c.Id,
                 Name = c.Name,
-                Slug = c.Slug
+                Slug = c.Slug,
+                ParentCategoryId = c.ParentCategoryId,
+                IsActive = c.IsActive
             };
         }
 
-        public async Task CreateAsync(CategoryCreateDto dto)
+        // Tao danh muc moi va tao slug tu ten/slug dau vao.
+        public async Task<CategoryResponseDto> CreateAsync(CategoryCreateDto dto)
         {
             var category = new Category
             {
@@ -51,9 +58,19 @@ namespace ShopApi.Services
 
             await _repo.AddAsync(category);
             await _repo.SaveChangesAsync();
+
+            return new CategoryResponseDto
+            {
+                Id = category.Id,
+                Name = category.Name,
+                Slug = category.Slug,
+                ParentCategoryId = category.ParentCategoryId,
+                IsActive = category.IsActive
+            };
         }
 
-        public async Task UpdateAsync(int id, CategoryUpdateDto dto)
+        // Cap nhat thong tin danh muc theo id.
+        public async Task<CategoryResponseDto> UpdateAsync(int id, CategoryUpdateDto dto)
         {
             var c = await _repo.GetByIdAsync(id);
             if (c == null) throw new Exception("Category not found");
@@ -64,9 +81,19 @@ namespace ShopApi.Services
 
             _repo.Update(c);
             await _repo.SaveChangesAsync();
+
+            return new CategoryResponseDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Slug = c.Slug,
+                ParentCategoryId = c.ParentCategoryId,
+                IsActive = c.IsActive
+            };
         }
 
-        public async Task DeleteAsync(int id)
+        // Xoa mem danh muc neu khong ton tai san pham.
+        public async Task<object> DeleteAsync(int id)
         {
             var c = await _repo.GetByIdAsync(id);
             if (c == null) throw new Exception("Category not found");
@@ -78,8 +105,18 @@ namespace ShopApi.Services
             c.IsActive = false;
             _repo.Update(c);
             await _repo.SaveChangesAsync();
+
+            return new
+            {
+                c.Id,
+                c.Name,
+                c.Slug,
+                c.ParentCategoryId,
+                c.IsActive
+            };
         }
 
+        // Chuan hoa slug ve dang lowercase-kebab-case.
         private static string BuildSlug(string? slug, string name)
         {
             var source = string.IsNullOrWhiteSpace(slug) ? name : slug;

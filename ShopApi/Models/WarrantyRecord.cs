@@ -1,5 +1,6 @@
-namespace ShopApi.Models
+﻿namespace ShopApi.Models
 {
+    // Mo hinh du lieu WarrantyRecord.
     public class WarrantyRecord
     {
         public int Id { get; set; }
@@ -15,3 +16,4 @@ namespace ShopApi.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
+

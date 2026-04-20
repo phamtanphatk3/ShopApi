@@ -15,6 +15,7 @@ namespace ShopApi.Controllers
             _service = service;
         }
 
+        // Tao yeu cau mua tra gop va tinh lich thanh toan.
         [HttpPost]
         public async Task<IActionResult> Create(InstallmentCreateDto dto)
         {

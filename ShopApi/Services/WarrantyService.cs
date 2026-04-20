@@ -14,6 +14,7 @@ namespace ShopApi.Services
             _context = context;
         }
 
+        // Tao ban ghi bao hanh moi cho san pham trong don hang.
         public async Task<WarrantyLookupResponseDto> CreateAsync(CreateWarrantyDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.SerialNumber))
@@ -63,6 +64,7 @@ namespace ShopApi.Services
             return ToLookupDto(record, product.Name);
         }
 
+        // Tra cuu bao hanh theo serial, so dien thoai hoac ma don hang.
         public async Task<List<WarrantyLookupResponseDto>> LookupAsync(
             string? serial,
             string? phone,
@@ -118,6 +120,7 @@ namespace ShopApi.Services
                 .ToList();
         }
 
+        // Chuyen doi du lieu WarrantyRecord sang DTO tra cuu.
         private static WarrantyLookupResponseDto ToLookupDto(WarrantyRecord record, string productName)
         {
             var now = DateTime.UtcNow;

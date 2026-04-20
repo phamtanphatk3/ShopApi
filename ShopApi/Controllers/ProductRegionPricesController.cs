@@ -20,6 +20,7 @@ namespace ShopApi.Controllers
             _context = context;
         }
 
+        // Lay danh sach gia theo khu vuc cua mot san pham.
         [HttpGet]
         public async Task<IActionResult> GetByProduct(int productId)
         {
@@ -46,6 +47,7 @@ namespace ShopApi.Controllers
             });
         }
 
+        // Tao gia khu vuc moi cho san pham.
         [HttpPost]
         public async Task<IActionResult> Create(int productId, [FromBody] ProductRegionPriceCreateDto dto)
         {
@@ -83,6 +85,7 @@ namespace ShopApi.Controllers
             });
         }
 
+        // Cap nhat gia khu vuc cua san pham theo ten khu vuc.
         [HttpPut("{region}")]
         public async Task<IActionResult> Update(int productId, string region, [FromBody] ProductRegionPriceUpdateDto dto)
         {
@@ -108,6 +111,7 @@ namespace ShopApi.Controllers
             });
         }
 
+        // Xoa gia khu vuc cua san pham theo ten khu vuc.
         [HttpDelete("{region}")]
         public async Task<IActionResult> Delete(int productId, string region)
         {
@@ -123,11 +127,16 @@ namespace ShopApi.Controllers
             _context.ProductRegionPrices.Remove(item);
             await _context.SaveChangesAsync();
 
-            return Ok(new ApiResponse<string?>
+            return Ok(new ApiResponse<object>
             {
                 Success = true,
                 Message = "Deleted",
-                Data = null
+                Data = new
+                {
+                    item.Id,
+                    item.ProductId,
+                    item.Region
+                }
             });
         }
     }

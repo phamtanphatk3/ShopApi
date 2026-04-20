@@ -2,6 +2,7 @@
 
 namespace ShopApi.Repositories.Interfaces
 {
+    // Hop dong truy cap du lieu san pham.
     public interface IProductRepository
     {
         IQueryable<Product> GetAll();

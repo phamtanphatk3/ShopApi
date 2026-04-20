@@ -19,6 +19,7 @@ namespace ShopApi.Services
             _config = config;
         }
 
+        // Dang nhap, kiem tra mat khau va tao JWT token cho nguoi dung hop le.
         public async Task<string?> Login(string username, string password)
         {
             var jwtKey = _config["Jwt:Key"];
@@ -35,7 +36,7 @@ namespace ShopApi.Services
             if (!validPassword)
                 return null;
 
-            // Upgrade old plaintext password to hashed format after successful login.
+            // Nang cap mat khau cu dang plaintext sang dang hash sau khi dang nhap thanh cong.
             if (!PasswordHelper.IsHashed(user.Password))
             {
                 user.Password = PasswordHelper.HashPassword(password);

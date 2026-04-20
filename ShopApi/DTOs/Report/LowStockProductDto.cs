@@ -1,5 +1,6 @@
-namespace ShopApi.DTOs.Report
+﻿namespace ShopApi.DTOs.Report
 {
+    // DTO trao doi du lieu LowStockProductDto.
     public class LowStockProductDto
     {
         public int ProductId { get; set; }
@@ -8,3 +9,4 @@ namespace ShopApi.DTOs.Report
         public int StockQuantity { get; set; }
     }
 }
+

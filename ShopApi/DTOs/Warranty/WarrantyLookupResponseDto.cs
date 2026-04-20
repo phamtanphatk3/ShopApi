@@ -1,5 +1,6 @@
-namespace ShopApi.DTOs.Warranty
+﻿namespace ShopApi.DTOs.Warranty
 {
+    // DTO trao doi du lieu WarrantyLookupResponseDto.
     public class WarrantyLookupResponseDto
     {
         public string SerialNumber { get; set; } = string.Empty;
@@ -12,3 +13,4 @@ namespace ShopApi.DTOs.Warranty
         public string Status { get; set; } = string.Empty;
     }
 }
+

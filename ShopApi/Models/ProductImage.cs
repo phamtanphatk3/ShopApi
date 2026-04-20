@@ -1,5 +1,6 @@
-namespace ShopApi.Models
+﻿namespace ShopApi.Models
 {
+    // Mo hinh du lieu ProductImage.
     public class ProductImage
     {
         public int Id { get; set; }
@@ -10,3 +11,4 @@ namespace ShopApi.Models
         public Product Product { get; set; } = null!;
     }
 }
+

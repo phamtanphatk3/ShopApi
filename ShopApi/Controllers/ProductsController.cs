@@ -17,7 +17,7 @@ namespace ShopApi.Controllers
             _service = service;
         }
 
-        // ================= GET LIST =================
+        // Lay danh sach san pham theo bo loc, sap xep, phan trang va khu vuc.
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> GetAll(
@@ -33,7 +33,7 @@ namespace ShopApi.Controllers
             });
         }
 
-        // ================= GET DETAIL =================
+        // Lay chi tiet san pham theo id va khu vuc.
         [HttpGet("{id}/detail")]
         [AllowAnonymous]
         public async Task<IActionResult> GetDetail(
@@ -58,42 +58,45 @@ namespace ShopApi.Controllers
             });
         }
 
-        // ================= CREATE =================
+        // Tao san pham moi (chi Admin/Staff).
         [Authorize(Roles = "Admin,Staff")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ProductCreateDto dto)
         {
-            await _service.CreateAsync(dto);
-            return Ok(new ApiResponse<string>
+            var data = await _service.CreateAsync(dto);
+            return Ok(new ApiResponse<ProductResponseDto>
             {
                 Success = true,
-                Message = "Created"
+                Message = "Created",
+                Data = data
             });
         }
 
-        // ================= UPDATE =================
+        // Cap nhat san pham theo id (chi Admin/Staff).
         [Authorize(Roles = "Admin,Staff")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ProductUpdateDto dto)
         {
-            await _service.UpdateAsync(id, dto);
-            return Ok(new ApiResponse<string>
+            var data = await _service.UpdateAsync(id, dto);
+            return Ok(new ApiResponse<ProductResponseDto>
             {
                 Success = true,
-                Message = "Updated"
+                Message = "Updated",
+                Data = data
             });
         }
 
-        // ================= DELETE =================
+        // Xoa san pham theo id (chi Admin/Staff).
         [Authorize(Roles = "Admin,Staff")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _service.DeleteAsync(id);
-            return Ok(new ApiResponse<string>
+            var data = await _service.DeleteAsync(id);
+            return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Deleted"
+                Message = "Deleted",
+                Data = data
             });
         }
     }

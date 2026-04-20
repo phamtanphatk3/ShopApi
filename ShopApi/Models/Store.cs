@@ -1,5 +1,6 @@
-namespace ShopApi.Models
+﻿namespace ShopApi.Models
 {
+    // Mo hinh du lieu Store.
     public class Store
     {
         public int Id { get; set; }
@@ -12,3 +13,4 @@ namespace ShopApi.Models
         public List<StoreInventory> Inventories { get; set; } = new();
     }
 }
+

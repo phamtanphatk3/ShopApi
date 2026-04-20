@@ -1,5 +1,6 @@
-namespace ShopApi.DTOs.Report
+﻿namespace ShopApi.DTOs.Report
 {
+    // DTO trao doi du lieu OrderStatusSummaryDto.
     public class OrderStatusSummaryDto
     {
         public string Status { get; set; } = string.Empty;
@@ -7,3 +8,4 @@ namespace ShopApi.DTOs.Report
         public decimal TotalRevenue { get; set; }
     }
 }
+

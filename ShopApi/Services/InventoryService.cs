@@ -13,9 +13,12 @@ namespace ShopApi.Services
             _context = context;
         }
 
-        // ✅ Nhập kho
+        // Nhap kho
         public async Task ImportAsync(int productId, int quantity)
         {
+            if (quantity <= 0)
+                throw new Exception("Quantity must be greater than 0");
+
             var product = await _context.Products.FindAsync(productId);
             if (product == null)
                 throw new Exception("Product không tồn tại");
@@ -33,9 +36,12 @@ namespace ShopApi.Services
             await _context.SaveChangesAsync();
         }
 
-        // ✅ Xuất kho
+        // Xuat kho
         public async Task ExportAsync(int productId, int quantity)
         {
+            if (quantity <= 0)
+                throw new Exception("Quantity must be greater than 0");
+
             var product = await _context.Products.FindAsync(productId);
             if (product == null)
                 throw new Exception("Product không tồn tại");
@@ -56,13 +62,28 @@ namespace ShopApi.Services
             await _context.SaveChangesAsync();
         }
 
-        // ✅ Lịch sử
+        // Lich su giao dich kho
         public async Task<List<InventoryTransaction>> GetHistory(int productId)
         {
             return await _context.InventoryTransactions
                 .Where(x => x.ProductId == productId)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
+        }
+
+        // Lay ton kho hien tai cua san pham.
+        public async Task<object> GetStockAsync(int productId)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+                throw new Exception("Product không tồn tại");
+
+            return new
+            {
+                product.Id,
+                product.Name,
+                product.StockQuantity
+            };
         }
     }
 }

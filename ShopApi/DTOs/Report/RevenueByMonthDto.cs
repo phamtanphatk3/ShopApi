@@ -1,5 +1,6 @@
-namespace ShopApi.DTOs.Report
+﻿namespace ShopApi.DTOs.Report
 {
+    // DTO trao doi du lieu RevenueByMonthDto.
     public class RevenueByMonthDto
     {
         public int Year { get; set; }
@@ -8,3 +9,4 @@ namespace ShopApi.DTOs.Report
         public int OrderCount { get; set; }
     }
 }
+

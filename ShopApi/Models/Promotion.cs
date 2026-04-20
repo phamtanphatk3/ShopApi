@@ -1,5 +1,6 @@
-namespace ShopApi.Models
+﻿namespace ShopApi.Models
 {
+    // Mo hinh du lieu Promotion.
     public class Promotion
     {
         public int Id { get; set; }
@@ -12,3 +13,4 @@ namespace ShopApi.Models
         public List<ProductPromotion> ProductPromotions { get; set; } = new();
     }
 }
+
