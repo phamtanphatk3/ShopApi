@@ -77,7 +77,7 @@ Dang nhap:
 - Nhan token JWT, Authorize theo format:
 `Bearer <token>`
 
-## 6. Bao cao (Bai 16)
+## 6. Bao cao
 Endpoint:
 - `GET /api/reports/revenue/daily`
 - `GET /api/reports/revenue/monthly`
