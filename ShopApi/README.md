@@ -10,14 +10,27 @@ Du an API ban hang dien may, trien khai cac bai 1-16:
 - Bao cao doanh thu, top ban chay, don theo trang thai, ton kho thap
 
 ## 2. Kien truc
-Su dung mo hinh:
-- `Controller -> Service -> Repository -> DbContext (EF Core)`
+Kien truc hien tai theo huong phan lop ro trach nhiem:
+- `Controllers`: nhan request HTTP, authorize, tra response.
+- `Services`: xu ly nghiep vu (dat hang, coupon, ton kho, bao cao, bao hanh...).
+- `Repositories`: truy cap du lieu theo bang nghiep vu (Category/Product).
+- `Data (AppDbContext)`: cau hinh EF Core, quan he, index, seed data.
+- `Models/DTOs`: tach model luu tru va model trao doi du lieu API.
 
-Thanh phan chinh:
-- JWT Authentication + Role-based Authorization
-- Global Exception Middleware
-- API response format thong nhat
-- EF Core Migrations
+Luong xu ly request:
+- `Client -> Controller -> Service -> Repository/DbContext -> SQL Server -> Controller -> Client`
+
+Thanh phan ky thuat chinh:
+- `EF Core + Migrations`: quan ly schema va cap nhat database.
+- `JWT Authentication + Role-based Authorization`: phan quyen `Admin/Staff/Customer`.
+- `FluentValidation`: validate request DTO truoc khi vao nghiep vu.
+- `ExceptionMiddleware`: bat loi toan cuc, map status code va format loi thong nhat.
+- `ApiResponse/ApiErrorResponse`: thong nhat cau truc response cho frontend.
+- `Static Files (wwwroot/images)`: phuc vu anh san pham/anh brand.
+
+Che do chay:
+- `Development`: co the bat `Auth:BypassEnabled=true` de test nhanh khong can token.
+- `Production`: dung JWT day du de dam bao bao mat.
 
 ## 3. Yeu cau moi truong
 - .NET SDK 10
