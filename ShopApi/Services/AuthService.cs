@@ -1,10 +1,11 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ShopApi.Common;
+using ShopApi.Common.Exceptions;
 using ShopApi.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 
 namespace ShopApi.Services
 {
@@ -24,7 +25,7 @@ namespace ShopApi.Services
         {
             var jwtKey = _config["Jwt:Key"];
             if (string.IsNullOrWhiteSpace(jwtKey))
-                throw new Exception("JWT Key is missing");
+                throw new AppBadRequestException("Thieu cau hinh khoa JWT");
 
             var user = await _context.Users
                 .FirstOrDefaultAsync(x => x.Username == username);
@@ -67,3 +68,5 @@ namespace ShopApi.Services
         }
     }
 }
+
+

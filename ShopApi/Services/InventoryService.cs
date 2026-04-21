@@ -1,6 +1,7 @@
-﻿using ShopApi.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using ShopApi.Common.Exceptions;
+using ShopApi.Data;
 using ShopApi.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace ShopApi.Services
 {
@@ -17,11 +18,11 @@ namespace ShopApi.Services
         public async Task ImportAsync(int productId, int quantity)
         {
             if (quantity <= 0)
-                throw new Exception("Quantity must be greater than 0");
+                throw new AppBadRequestException("So luong phai lon hon 0");
 
             var product = await _context.Products.FindAsync(productId);
             if (product == null)
-                throw new Exception("Product không tồn tại");
+                throw new AppNotFoundException("Khong tim thay san pham");
 
             product.StockQuantity += quantity;
 
@@ -40,14 +41,14 @@ namespace ShopApi.Services
         public async Task ExportAsync(int productId, int quantity)
         {
             if (quantity <= 0)
-                throw new Exception("Quantity must be greater than 0");
+                throw new AppBadRequestException("So luong phai lon hon 0");
 
             var product = await _context.Products.FindAsync(productId);
             if (product == null)
-                throw new Exception("Product không tồn tại");
+                throw new AppNotFoundException("Khong tim thay san pham");
 
             if (product.StockQuantity < quantity)
-                throw new Exception("Không đủ hàng trong kho");
+                throw new AppBadRequestException("Khong du hang trong kho");
 
             product.StockQuantity -= quantity;
 
@@ -76,7 +77,7 @@ namespace ShopApi.Services
         {
             var product = await _context.Products.FindAsync(productId);
             if (product == null)
-                throw new Exception("Product không tồn tại");
+                throw new AppNotFoundException("Khong tim thay san pham");
 
             return new
             {
@@ -87,3 +88,4 @@ namespace ShopApi.Services
         }
     }
 }
+

@@ -10,7 +10,7 @@ namespace ShopApi.DTOs.ProductImage
         public string Name { get; set; } = string.Empty;
 
         [Required]
-        [RegularExpression("^(Percent|Amount)$", ErrorMessage = "DiscountType must be Percent or Amount")]
+        [RegularExpression("^(Percent|Amount)$", ErrorMessage = "DiscountType chi duoc la Percent hoac Amount")]
         public string? DiscountType { get; set; }
 
         [Required]

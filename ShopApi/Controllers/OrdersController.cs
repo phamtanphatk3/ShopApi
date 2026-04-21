@@ -1,9 +1,6 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ShopApi.Common;
-using ShopApi.Data;
 using ShopApi.DTOs.Order;
 using ShopApi.Services;
 
@@ -15,12 +12,10 @@ namespace ShopApi.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly OrderService _service;
-        private readonly AppDbContext _context;
 
-        public OrdersController(OrderService service, AppDbContext context)
+        public OrdersController(OrderService service)
         {
             _service = service;
-            _context = context;
         }
 
         // Tao don hang tu gio hang cua khach hang.
@@ -32,7 +27,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Created",
+                Message = "Tao thanh cong",
                 Data = data
             });
         }
@@ -46,7 +41,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Updated",
+                Message = "Cap nhat thanh cong",
                 Data = data
             });
         }
@@ -56,33 +51,12 @@ namespace ShopApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMyOrders()
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-
-            var orders = await _context.Orders
-                .Include(o => o.Items)
-                .Where(o => o.UserId == userId)
-                .Select(o => new
-                {
-                    o.Id,
-                    o.OrderCode,
-                    o.CustomerName,
-                    o.Status,
-                    o.FinalAmount,
-                    o.CreatedAt,
-                    Items = o.Items.Select(i => new
-                    {
-                        i.ProductId,
-                        i.Quantity,
-                        i.UnitPrice,
-                        i.LineTotal
-                    })
-                })
-                .ToListAsync();
+            var orders = await _service.GetMyOrders();
 
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Success",
+                Message = "Thanh cong",
                 Data = orders
             });
         }
@@ -92,24 +66,12 @@ namespace ShopApi.Controllers
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
-            var orders = await _context.Orders
-                .Include(o => o.User)
-                .Select(o => new
-                {
-                    o.Id,
-                    o.OrderCode,
-                    o.CustomerName,
-                    o.Status,
-                    o.FinalAmount,
-                    o.CreatedAt,
-                    Username = o.User.Username
-                })
-                .ToListAsync();
+            var orders = await _service.GetAllOrders();
 
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Success",
+                Message = "Thanh cong",
                 Data = orders
             });
         }
@@ -118,51 +80,15 @@ namespace ShopApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
-
-            var order = await _context.Orders
-                .Include(o => o.Items)
-                .Include(o => o.User)
-                .FirstOrDefaultAsync(o => o.Id == id);
-
-            if (order == null)
-            {
-                return NotFound(new ApiResponse<string?>
-                {
-                    Success = false,
-                    Message = "Order not found",
-                    Data = null
-                });
-            }
-
-            if (role == "Customer" && order.UserId != userId)
-                return Forbid();
-
-            var data = new
-            {
-                order.Id,
-                order.OrderCode,
-                order.CustomerName,
-                order.Status,
-                order.FinalAmount,
-                order.CreatedAt,
-                Username = order.User.Username,
-                Items = order.Items.Select(i => new
-                {
-                    i.ProductId,
-                    i.Quantity,
-                    i.UnitPrice,
-                    i.LineTotal
-                })
-            };
+            var data = await _service.GetById(id);
 
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Success",
+                Message = "Thanh cong",
                 Data = data
             });
         }
     }
 }
+

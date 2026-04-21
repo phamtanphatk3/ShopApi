@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopApi.Common;
 using ShopApi.Services;
@@ -25,7 +25,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Success",
+                Message = "Thanh cong",
                 Data = data
             });
         }
@@ -38,7 +38,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Success",
+                Message = "Thanh cong",
                 Data = data
             });
         }
@@ -51,7 +51,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Success",
+                Message = "Thanh cong",
                 Data = data
             });
         }
@@ -64,7 +64,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Success",
+                Message = "Thanh cong",
                 Data = data
             });
         }
@@ -77,9 +77,10 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Success",
+                Message = "Thanh cong",
                 Data = data
             });
         }
     }
 }
+

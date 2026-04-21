@@ -12,7 +12,7 @@ namespace ShopApi.DTOs.Category
         [StringLength(120)]
         public string? Slug { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "ParentCategoryId must be greater than 0")]
+        [Range(1, int.MaxValue, ErrorMessage = "ParentCategoryId phai lon hon 0")]
         public int? ParentCategoryId { get; set; }
     }
 }

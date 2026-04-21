@@ -1,4 +1,5 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using ShopApi.Common.Exceptions;
 using ShopApi.Data;
 using ShopApi.DTOs.Warranty;
 using ShopApi.Models;
@@ -18,33 +19,33 @@ namespace ShopApi.Services
         public async Task<WarrantyLookupResponseDto> CreateAsync(CreateWarrantyDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.SerialNumber))
-                throw new Exception("Serial number is required");
+                throw new AppBadRequestException("Serial la bat buoc");
 
             if (string.IsNullOrWhiteSpace(dto.CustomerPhone))
-                throw new Exception("Customer phone is required");
+                throw new AppBadRequestException("So dien thoai khach hang la bat buoc");
 
             if (dto.WarrantyMonths <= 0)
-                throw new Exception("Warranty months must be greater than 0");
+                throw new AppBadRequestException("So thang bao hanh phai lon hon 0");
 
             var serial = dto.SerialNumber.Trim();
             var phone = dto.CustomerPhone.Trim();
 
             var orderExists = await _context.Orders.AnyAsync(x => x.Id == dto.OrderId);
             if (!orderExists)
-                throw new Exception("Order not found");
+                throw new AppNotFoundException("Khong tim thay don hang");
 
             var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == dto.ProductId);
             if (product == null)
-                throw new Exception("Product not found");
+                throw new AppNotFoundException("Khong tim thay san pham");
 
             var orderHasProduct = await _context.OrderItems.AnyAsync(x =>
                 x.OrderId == dto.OrderId && x.ProductId == dto.ProductId);
             if (!orderHasProduct)
-                throw new Exception("Product does not belong to this order");
+                throw new AppBadRequestException("San pham khong thuoc don hang nay");
 
             var duplicateSerial = await _context.WarrantyRecords.AnyAsync(x => x.SerialNumber == serial);
             if (duplicateSerial)
-                throw new Exception("Serial number already exists");
+                throw new AppConflictException("Serial da ton tai");
 
             var now = DateTime.UtcNow;
             var record = new WarrantyRecord
@@ -74,7 +75,7 @@ namespace ShopApi.Services
                 string.IsNullOrWhiteSpace(phone) &&
                 !orderId.HasValue)
             {
-                throw new Exception("Provide at least one filter: serial, phone, or orderId");
+                throw new AppBadRequestException("Can truyen it nhat mot dieu kien: serial, so dien thoai hoac ma don hang");
             }
 
             var query = _context.WarrantyRecords
@@ -140,3 +141,6 @@ namespace ShopApi.Services
         }
     }
 }
+
+
+

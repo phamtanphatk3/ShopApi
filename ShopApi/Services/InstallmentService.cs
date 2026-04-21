@@ -1,4 +1,5 @@
-using ShopApi.Data;
+﻿using ShopApi.Data;
+using ShopApi.Common.Exceptions;
 using ShopApi.DTOs.Installment;
 using ShopApi.Models;
 
@@ -17,7 +18,7 @@ namespace ShopApi.Services
         public async Task<object> Create(InstallmentCreateDto dto)
         {
             var product = await _context.Products.FindAsync(dto.ProductId);
-            if (product == null) throw new Exception("Product not found");
+            if (product == null) throw new AppNotFoundException("Khong tim thay san pham");
 
             var price = product.Price;
 
@@ -54,3 +55,6 @@ namespace ShopApi.Services
         }
     }
 }
+
+
+

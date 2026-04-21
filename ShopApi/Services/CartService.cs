@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ShopApi.Data;
+using ShopApi.Common.Exceptions;
 using ShopApi.DTOs.Cart;
 using ShopApi.Models;
 using System.Security.Claims;
@@ -23,7 +24,7 @@ namespace ShopApi.Services
         {
             var userIdClaim = _http.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
-                throw new Exception("Unauthorized");
+                throw new AppUnauthorizedException("Chua dang nhap");
 
             return int.Parse(userIdClaim.Value);
         }
@@ -54,12 +55,12 @@ namespace ShopApi.Services
         public async Task AddToCart(AddToCartDto dto)
         {
             if (dto.Quantity <= 0)
-                throw new Exception("Quantity must be greater than 0");
+                throw new AppBadRequestException("So luong phai lon hon 0");
 
             var product = await _context.Products
                 .FirstOrDefaultAsync(x => x.Id == dto.ProductId && x.IsActive);
             if (product == null)
-                throw new Exception("Product not found");
+                throw new AppNotFoundException("Khong tim thay san pham");
 
             var userId = GetCurrentUserId();
             var cart = await GetCart(userId);
@@ -70,7 +71,7 @@ namespace ShopApi.Services
             {
                 var newQuantity = item.Quantity + dto.Quantity;
                 if (newQuantity > product.StockQuantity)
-                    throw new Exception("Not enough stock");
+                    throw new AppBadRequestException("Khong du ton kho");
 
                 item.Quantity += dto.Quantity;
                 item.UnitPrice = product.Price;
@@ -78,7 +79,7 @@ namespace ShopApi.Services
             else
             {
                 if (dto.Quantity > product.StockQuantity)
-                    throw new Exception("Not enough stock");
+                    throw new AppBadRequestException("Khong du ton kho");
 
                 cart.Items.Add(new CartItem
                 {
@@ -95,7 +96,7 @@ namespace ShopApi.Services
         public async Task UpdateItem(int itemId, int quantity)
         {
             if (quantity <= 0)
-                throw new Exception("Quantity must be greater than 0");
+                throw new AppBadRequestException("So luong phai lon hon 0");
 
             var userId = GetCurrentUserId();
 
@@ -104,10 +105,10 @@ namespace ShopApi.Services
                 .Include(x => x.Product)
                 .FirstOrDefaultAsync(x => x.Id == itemId && x.Cart.UserId == userId);
 
-            if (item == null) throw new Exception("Item not found");
-            if (item.Product == null) throw new Exception("Product not found");
+            if (item == null) throw new AppNotFoundException("Khong tim thay san pham trong gio");
+            if (item.Product == null) throw new AppNotFoundException("Khong tim thay san pham");
             if (quantity > item.Product.StockQuantity)
-                throw new Exception("Not enough stock");
+                throw new AppBadRequestException("Khong du ton kho");
 
             item.Quantity = quantity;
             item.UnitPrice = item.Product.Price;
@@ -123,7 +124,7 @@ namespace ShopApi.Services
                 .Include(x => x.Cart)
                 .FirstOrDefaultAsync(x => x.Id == itemId && x.Cart.UserId == userId);
 
-            if (item == null) throw new Exception("Item not found");
+            if (item == null) throw new AppNotFoundException("Khong tim thay san pham trong gio");
 
             _context.CartItems.Remove(item);
             await _context.SaveChangesAsync();
@@ -155,3 +156,6 @@ namespace ShopApi.Services
         }
     }
 }
+
+
+

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ShopApi.Common.Exceptions;
 using ShopApi.DTOs.Product;
 using ShopApi.Models;
 using ShopApi.Repositories.Interfaces;
@@ -133,12 +134,12 @@ namespace ShopApi.Services
         {
             var normalizedSku = dto.SKU?.Trim();
             if (string.IsNullOrWhiteSpace(normalizedSku))
-                throw new Exception("SKU is required");
+                throw new AppBadRequestException("SKU la bat buoc");
 
             var duplicateSku = await _repo.GetAll()
                 .AnyAsync(x => x.SKU.ToLower() == normalizedSku.ToLower());
             if (duplicateSku)
-                throw new Exception("SKU already exists");
+                throw new AppConflictException("SKU da ton tai");
 
             var product = new Product
             {
@@ -156,7 +157,7 @@ namespace ShopApi.Services
 
             var created = await GetByIdAsync(product.Id);
             if (created == null)
-                throw new Exception("Cannot load created product");
+                throw new AppNotFoundException("Khong the tai du lieu san pham vua tao");
 
             return created;
         }
@@ -165,16 +166,16 @@ namespace ShopApi.Services
         public async Task<ProductResponseDto> UpdateAsync(int id, ProductUpdateDto dto)
         {
             var p = await _repo.GetByIdAsync(id);
-            if (p == null) throw new Exception("Product not found");
+            if (p == null) throw new AppNotFoundException("Khong tim thay san pham");
 
             var normalizedSku = dto.SKU?.Trim();
             if (string.IsNullOrWhiteSpace(normalizedSku))
-                throw new Exception("SKU is required");
+                throw new AppBadRequestException("SKU la bat buoc");
 
             var duplicateSku = await _repo.GetAll()
                 .AnyAsync(x => x.Id != id && x.SKU.ToLower() == normalizedSku.ToLower());
             if (duplicateSku)
-                throw new Exception("SKU already exists");
+                throw new AppConflictException("SKU da ton tai");
 
             p.Name = dto.Name;
             p.SKU = normalizedSku;
@@ -190,7 +191,7 @@ namespace ShopApi.Services
 
             var updated = await GetByIdAsync(id);
             if (updated == null)
-                throw new Exception("Cannot load updated product");
+                throw new AppNotFoundException("Khong the tai du lieu san pham sau cap nhat");
 
             return updated;
         }
@@ -199,7 +200,7 @@ namespace ShopApi.Services
         public async Task<object> DeleteAsync(int id)
         {
             var p = await _repo.GetByIdAsync(id);
-            if (p == null) throw new Exception("Product not found");
+            if (p == null) throw new AppNotFoundException("Khong tim thay san pham");
 
             var deletedData = new
             {
@@ -294,3 +295,6 @@ namespace ShopApi.Services
         }
     }
 }
+
+
+

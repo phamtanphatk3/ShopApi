@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopApi.Common;
 using ShopApi.DTOs.ProductImage;
@@ -26,7 +26,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Created",
+                Message = "Tao thanh cong",
                 Data = promo
             });
         }
@@ -45,3 +45,4 @@ namespace ShopApi.Controllers
         }
     }
 }
+

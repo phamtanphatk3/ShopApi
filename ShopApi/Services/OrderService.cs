@@ -1,4 +1,5 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using ShopApi.Common.Exceptions;
 using ShopApi.Data;
 using ShopApi.DTOs.Order;
 using ShopApi.Models;
@@ -23,7 +24,7 @@ namespace ShopApi.Services
         {
             var userIdClaim = _http.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
-                throw new Exception("Unauthorized");
+                throw new AppUnauthorizedException("Chua dang nhap");
 
             var userId = int.Parse(userIdClaim.Value);
 
@@ -37,16 +38,16 @@ namespace ShopApi.Services
                     .FirstOrDefaultAsync(c => c.UserId == userId);
 
                 if (cart == null || !cart.Items.Any())
-                    throw new Exception("Cart is empty");
+                    throw new AppBadRequestException("Gio hang dang trong");
 
                 // Kiem tra ton kho cho tung item truoc khi tao don.
                 foreach (var item in cart.Items)
                 {
                     if (item.Product == null)
-                        throw new Exception("Product not found");
+                        throw new AppNotFoundException("Khong tim thay san pham");
 
                     if (item.Product.StockQuantity < item.Quantity)
-                        throw new Exception($"Product {item.Product.Name} out of stock");
+                        throw new AppBadRequestException($"San pham {item.Product.Name} khong du ton kho");
                 }
 
                 // Kiem tra tinh hop le cua coupon neu co ap dung.
@@ -58,18 +59,18 @@ namespace ShopApi.Services
                         .FirstOrDefaultAsync(x => x.Code == couponCode);
 
                     if (coupon == null)
-                        throw new Exception("Coupon not found");
+                        throw new AppNotFoundException("Khong tim thay ma giam gia");
 
                     if (coupon.StartDate > DateTime.Now || coupon.EndDate < DateTime.Now)
-                        throw new Exception("Coupon expired");
+                        throw new AppBadRequestException("Ma giam gia da het han");
 
                     if (coupon.UsedCount >= coupon.UsageLimit)
-                        throw new Exception("Coupon usage limit reached");
+                        throw new AppBadRequestException("Ma giam gia da het luot su dung");
                 }
 
                 var user = await _context.Users.FindAsync(userId);
                 if (user == null)
-                    throw new Exception("User not found");
+                    throw new AppNotFoundException("Khong tim thay nguoi dung");
 
                 // Tao don va tao danh sach order item tu cart item.
                 var order = new Order
@@ -111,7 +112,7 @@ namespace ShopApi.Services
                 if (coupon != null)
                 {
                     if (order.FinalAmount < coupon.MinOrderValue)
-                        throw new Exception("Not enough order value for coupon");
+                        throw new AppBadRequestException("Gia tri don hang chua dat muc toi thieu de ap ma");
 
                     if (coupon.DiscountType.Equals("Percent", StringComparison.OrdinalIgnoreCase))
                     {
@@ -162,7 +163,7 @@ namespace ShopApi.Services
             var order = await _context.Orders.FindAsync(orderId);
 
             if (order == null)
-                throw new Exception("Order not found");
+                throw new AppNotFoundException("Khong tim thay don hang");
 
             var validStatus = new[]
             {
@@ -170,7 +171,7 @@ namespace ShopApi.Services
             };
 
             if (!validStatus.Contains(status))
-                throw new Exception("Invalid status");
+                throw new AppBadRequestException("Trang thai don hang khong hop le");
 
             order.Status = status;
             await _context.SaveChangesAsync();
@@ -184,5 +185,96 @@ namespace ShopApi.Services
                 order.CreatedAt
             };
         }
+
+        // Lay don hang cua user dang dang nhap.
+        public async Task<object> GetMyOrders()
+        {
+            var userIdClaim = _http.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                throw new AppUnauthorizedException("Chua dang nhap");
+
+            var userId = int.Parse(userIdClaim.Value);
+
+            return await _context.Orders
+                .Include(o => o.Items)
+                .Where(o => o.UserId == userId)
+                .Select(o => new
+                {
+                    o.Id,
+                    o.OrderCode,
+                    o.CustomerName,
+                    o.Status,
+                    o.FinalAmount,
+                    o.CreatedAt,
+                    Items = o.Items.Select(i => new
+                    {
+                        i.ProductId,
+                        i.Quantity,
+                        i.UnitPrice,
+                        i.LineTotal
+                    })
+                })
+                .ToListAsync();
+        }
+
+        // Lay tat ca don hang (cho Admin/Staff).
+        public async Task<object> GetAllOrders()
+        {
+            return await _context.Orders
+                .Include(o => o.User)
+                .Select(o => new
+                {
+                    o.Id,
+                    o.OrderCode,
+                    o.CustomerName,
+                    o.Status,
+                    o.FinalAmount,
+                    o.CreatedAt,
+                    Username = o.User.Username
+                })
+                .ToListAsync();
+        }
+
+        // Lay chi tiet don theo id va role dang dang nhap.
+        public async Task<object> GetById(int orderId)
+        {
+            var userIdClaim = _http.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                throw new AppUnauthorizedException("Chua dang nhap");
+
+            var role = _http.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = int.Parse(userIdClaim.Value);
+
+            var order = await _context.Orders
+                .Include(o => o.Items)
+                .Include(o => o.User)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (order == null)
+                throw new AppNotFoundException("Khong tim thay don hang");
+
+            if (string.Equals(role, "Customer", StringComparison.OrdinalIgnoreCase) && order.UserId != userId)
+                throw new AppForbiddenException("Ban khong co quyen xem don hang nay");
+
+            return new
+            {
+                order.Id,
+                order.OrderCode,
+                order.CustomerName,
+                order.Status,
+                order.FinalAmount,
+                order.CreatedAt,
+                Username = order.User.Username,
+                Items = order.Items.Select(i => new
+                {
+                    i.ProductId,
+                    i.Quantity,
+                    i.UnitPrice,
+                    i.LineTotal
+                })
+            };
+        }
     }
 }
+
+

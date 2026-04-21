@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopApi.Common;
 using ShopApi.DTOs.Cart;
@@ -27,7 +27,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Added to cart",
+                Message = "Them vao gio thanh cong",
                 Data = data
             });
         }
@@ -40,7 +40,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Success",
+                Message = "Thanh cong",
                 Data = data
             });
         }
@@ -54,7 +54,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Updated",
+                Message = "Cap nhat thanh cong",
                 Data = data
             });
         }
@@ -68,9 +68,10 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Removed",
+                Message = "Xoa khoi gio thanh cong",
                 Data = data
             });
         }
     }
 }
+

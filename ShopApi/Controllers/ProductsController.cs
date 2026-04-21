@@ -28,7 +28,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Success",
+                Message = "Thanh cong",
                 Data = data
             });
         }
@@ -46,14 +46,14 @@ namespace ShopApi.Controllers
                 return NotFound(new ApiResponse<string>
                 {
                     Success = false,
-                    Message = "Product not found"
+                    Message = "Khong tim thay san pham"
                 });
             }
 
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Success",
+                Message = "Thanh cong",
                 Data = data
             });
         }
@@ -67,7 +67,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<ProductResponseDto>
             {
                 Success = true,
-                Message = "Created",
+                Message = "Tao thanh cong",
                 Data = data
             });
         }
@@ -81,7 +81,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<ProductResponseDto>
             {
                 Success = true,
-                Message = "Updated",
+                Message = "Cap nhat thanh cong",
                 Data = data
             });
         }
@@ -95,9 +95,10 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Deleted",
+                Message = "Xoa thanh cong",
                 Data = data
             });
         }
     }
 }
+

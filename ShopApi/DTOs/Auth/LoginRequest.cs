@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace ShopApi.DTOs.Auuth
+namespace ShopApi.DTOs.Auth
 {
     // DTO trao doi du lieu LoginRequest.
     public class LoginRequest
@@ -14,4 +14,3 @@ namespace ShopApi.DTOs.Auuth
         public string Password { get; set; } = string.Empty;
     }
 }
-

@@ -1,99 +1,138 @@
-# ShopApi - Do an thuc hanh ASP.NET Core
+# ShopApi - Backend bai tap 1-16
 
-## 1. Mo ta ngan
-Du an API ban hang dien may, trien khai cac bai 1-16:
-- CRUD danh muc, san pham, anh san pham
-- Gio hang, dat hang, coupon
-- Gia theo khu vuc, store, bao hanh/mo phong tra gop
-- Dang nhap + phan quyen (Admin/Staff/Customer)
-- Logging + global error handling
-- Bao cao doanh thu, top ban chay, don theo trang thai, ton kho thap
+## 1) Mo ta ngan
+ShopApi la backend ASP.NET Core + EF Core cho bai tap Shop dien may (bai 1 den bai 16), gom:
+- CRUD Category/Product/ProductImage
+- Cart/Order/Coupon
+- Promotion + gia sau giam
+- Gia theo khu vuc
+- Store + ton kho theo cua hang
+- Warranty lookup
+- Installment simulation
+- Auth + phan quyen Admin/Staff/Customer
+- Logging + global exception middleware
+- Reports (doanh thu, top ban chay, don theo trang thai, ton kho thap)
 
-## 2. Kien truc
-Kien truc hien tai theo huong phan lop ro trach nhiem:
-- `Controllers`: nhan request HTTP, authorize, tra response.
-- `Services`: xu ly nghiep vu (dat hang, coupon, ton kho, bao cao, bao hanh...).
-- `Repositories`: truy cap du lieu theo bang nghiep vu (Category/Product).
-- `Data (AppDbContext)`: cau hinh EF Core, quan he, index, seed data.
-- `Models/DTOs`: tach model luu tru va model trao doi du lieu API.
+## 2) Kien truc ngan gon
+- `Controllers/`: nhan request, authorize, tra response.
+- `Services/`: xu ly nghiep vu.
+- `Repositories/`: truy cap du lieu cho mot so module.
+- `Data/AppDbContext`: cau hinh EF Core, relation, index, seed.
+- `Models/`: entity map DB.
+- `DTOs/`: model request/response cho API.
+- `Middlewares/ExceptionMiddleware`: bat loi toan cuc, tra format loi thong nhat.
+- `Validators/` + FluentValidation: validate input.
 
-Luong xu ly request:
-- `Client -> Controller -> Service -> Repository/DbContext -> SQL Server -> Controller -> Client`
+Flow: `Client -> Controller -> Service -> DbContext/Repository -> SQL Server -> Response`.
 
-Thanh phan ky thuat chinh:
-- `EF Core + Migrations`: quan ly schema va cap nhat database.
-- `JWT Authentication + Role-based Authorization`: phan quyen `Admin/Staff/Customer`.
-- `FluentValidation`: validate request DTO truoc khi vao nghiep vu.
-- `ExceptionMiddleware`: bat loi toan cuc, map status code va format loi thong nhat.
-- `ApiResponse/ApiErrorResponse`: thong nhat cau truc response cho frontend.
-- `Static Files (wwwroot/images)`: phuc vu anh san pham/anh brand.
-
-Che do chay:
-- `Development`: co the bat `Auth:BypassEnabled=true` de test nhanh khong can token.
-- `Production`: dung JWT day du de dam bao bao mat.
-
-## 3. Yeu cau moi truong
+## 3) Yeu cau moi truong
 - .NET SDK 10
 - SQL Server
-- EF Core Tools
+- dotnet-ef
 
-Lenh cai EF Tool (neu chua co):
+Lenh cai dotnet-ef (neu chua co):
 ```bash
 dotnet tool install --global dotnet-ef
 ```
 
-## 4. Huong dan chay du an
-1. Vao thu muc project:
+## 4) Cach chay du an
+1. Mo terminal:
 ```bash
 cd D:\ShopApi\ShopApi
 ```
 
-2. Restore package:
+2. Restore:
 ```bash
 dotnet restore
 ```
 
-3. Tao/cap nhat database:
+3. Migrate DB:
 ```bash
 dotnet ef database update
 ```
 
-4. Chay API:
+4. Run API:
 ```bash
 dotnet run
 ```
 
 5. Mo Swagger:
-- `https://localhost:7212/swagger`
-- Neu profile may ban chay port khac, xem dong `Now listening on ...` trong console.
+- Localhost: `https://localhost:7212/swagger/index.html`
+- LAN (theo launch profile hien tai): `https://192.168.1.32:7212/swagger/index.html`
 
-## 5. Tai khoan va phan quyen
-Vai tro:
-- `Admin`, `Staff`: CRUD san pham va cac API quan tri
-- `Customer`: gio hang, dat hang, xem don cua chinh minh
+Neu port/IP khac, xem log `Now listening on ...` trong console.
 
-Dang nhap:
-- `POST /api/auth/login`
-- Nhan token JWT, Authorize theo format:
-`Bearer <token>`
-
-## 6. Bao cao
-Endpoint:
-- `GET /api/reports/revenue/daily`
-- `GET /api/reports/revenue/monthly`
-- `GET /api/reports/top-selling-products`
-- `GET /api/reports/orders-by-status`
-- `GET /api/reports/low-stock`
-
-Quyen truy cap:
-- `Admin`, `Staff`
-
-## 7. Tai lieu test API
-- Bai 15 checklist: `D:\ShopApi\BAI15_TEST.md`
-
-## 8. Ghi chu
-- De reset du lieu cu:
+## 5) Migration va reset DB
+Reset sach DB:
 ```bash
 dotnet ef database drop --force
 dotnet ef database update
 ```
+
+Danh sach migration trong thu muc:
+- `D:\ShopApi\ShopApi\Migrations`
+
+## 6) Seed du lieu
+Sau `dotnet ef database update`, du lieu seed co san tu migration/model config:
+- Category mau
+- User mau (neu chua ton tai) duoc chen bo sung trong migration `AddUserIdToCart`
+
+Neu can tao them user Staff bang SQL:
+```sql
+INSERT INTO Users(Username, Password, Role)
+VALUES ('staff01', '123', 'Staff');
+```
+
+## 7) Tai khoan mau
+Mac dinh dung de test:
+- Admin: `admin / 123`
+- Customer: `user1 / 123`
+
+Dang nhap:
+- `POST /api/auth/login`
+
+Body:
+```json
+{
+  "username": "admin",
+  "password": "123"
+}
+```
+
+Lay token va truyen:
+```text
+Authorization: Bearer <token>
+```
+
+## 8) Link test API nhanh
+- Swagger UI:
+  - `https://localhost:7212/swagger/index.html`
+  - `https://192.168.1.32:7212/swagger/index.html`
+- Auth:
+  - `POST /api/auth/login`
+- Products listing:
+  - `GET /api/products`
+- Product detail:
+  - `GET /api/products/{id}/detail`
+- Cart:
+  - `POST /api/cart`
+  - `GET /api/cart`
+- Orders:
+  - `POST /api/orders`
+  - `GET /api/orders`
+- Reports:
+  - `GET /api/reports/revenue/daily`
+  - `GET /api/reports/revenue/monthly`
+  - `GET /api/reports/top-selling-products`
+  - `GET /api/reports/orders-by-status`
+  - `GET /api/reports/low-stock`
+
+## 9) Luu y cho frontend
+- CORS can mo domain frontend trong `Program.cs` neu frontend chay host khac.
+- API response da theo format:
+  - Thanh cong: `ApiResponse<T> { success, message, data }`
+  - Loi: `ApiErrorResponse { success, message, traceId, path, timestamp }`
+
+## 10) Tai lieu test bo sung
+- Checklist bai 15: `D:\ShopApi\BAI15_TEST.md`
+- Checklist tong hop bai 1-16: `D:\ShopApi\SHOPAPI_TEST_1_16.md`

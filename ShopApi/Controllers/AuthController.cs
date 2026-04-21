@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopApi.Common;
-using ShopApi.DTOs.Auuth;
+using ShopApi.DTOs.Auth;
 using ShopApi.Services;
 
 namespace ShopApi.Controllers
@@ -43,3 +43,4 @@ namespace ShopApi.Controllers
         }
     }
 }
+

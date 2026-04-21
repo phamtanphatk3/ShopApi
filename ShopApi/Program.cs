@@ -2,9 +2,11 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using ShopApi.Common;
 using ShopApi.Common.Auth;
 using ShopApi.Data;
 using ShopApi.Middlewares;
@@ -43,7 +45,6 @@ namespace ShopApi
             // Dang ky service nghiep vu.
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IProductService, ProductService>();
-
             builder.Services.AddScoped<ProductImageService>();
             builder.Services.AddScoped<InventoryService>();
             builder.Services.AddScoped<CartService>();
@@ -53,11 +54,34 @@ namespace ShopApi
             builder.Services.AddScoped<ReportService>();
             builder.Services.AddScoped<PromotionService>();
             builder.Services.AddScoped<WarrantyService>();
+            builder.Services.AddScoped<StoreService>();
+            builder.Services.AddScoped<ProductRegionPriceService>();
 
             builder.Services.AddHttpContextAccessor();
 
             // Dang ky controller va FluentValidation.
             builder.Services.AddControllers();
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var errors = context.ModelState
+                        .Where(x => x.Value?.Errors.Count > 0)
+                        .Select(x => new
+                        {
+                            Field = x.Key,
+                            Errors = x.Value!.Errors.Select(e => e.ErrorMessage).ToList()
+                        })
+                        .ToList();
+
+                    return new BadRequestObjectResult(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Du lieu dau vao khong hop le",
+                        Data = errors
+                    });
+                };
+            });
             builder.Services.AddFluentValidationAutoValidation(options =>
             {
                 options.DisableDataAnnotationsValidation = true;
@@ -118,7 +142,7 @@ namespace ShopApi
                 var key = builder.Configuration["Jwt:Key"];
 
                 if (string.IsNullOrEmpty(key) || key.Length < 32)
-                    throw new Exception("JWT Key must be at least 32 characters");
+                    throw new Exception("JWT Key phai dai it nhat 32 ky tu");
 
                 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>

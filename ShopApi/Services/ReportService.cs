@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ShopApi.Data;
 using ShopApi.DTOs.Report;
 
@@ -128,3 +128,4 @@ namespace ShopApi.Services
         }
     }
 }
+

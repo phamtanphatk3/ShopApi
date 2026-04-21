@@ -28,7 +28,7 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Upload thanh cong",
+                Message = "Tai anh thanh cong",
                 Data = data
             });
         }
@@ -41,9 +41,10 @@ namespace ShopApi.Controllers
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = "Success",
+                Message = "Thanh cong",
                 Data = data
             });
         }
     }
 }
+

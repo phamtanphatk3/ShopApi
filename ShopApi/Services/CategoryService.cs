@@ -1,4 +1,5 @@
-using ShopApi.DTOs.Category;
+﻿using ShopApi.DTOs.Category;
+using ShopApi.Common.Exceptions;
 using ShopApi.Models;
 using ShopApi.Repositories.Interfaces;
 using ShopApi.Services.Interfaces;
@@ -73,7 +74,7 @@ namespace ShopApi.Services
         public async Task<CategoryResponseDto> UpdateAsync(int id, CategoryUpdateDto dto)
         {
             var c = await _repo.GetByIdAsync(id);
-            if (c == null) throw new Exception("Category not found");
+            if (c == null) throw new AppNotFoundException("Khong tim thay danh muc");
 
             c.Name = dto.Name;
             c.Slug = BuildSlug(dto.Slug, dto.Name);
@@ -96,11 +97,11 @@ namespace ShopApi.Services
         public async Task<object> DeleteAsync(int id)
         {
             var c = await _repo.GetByIdAsync(id);
-            if (c == null) throw new Exception("Category not found");
+            if (c == null) throw new AppNotFoundException("Khong tim thay danh muc");
 
             var hasProducts = await _repo.HasProductsAsync(id);
             if (hasProducts)
-                throw new Exception("Cannot delete category because it has products");
+                throw new AppConflictException("Khong the xoa danh muc vi van con san pham");
 
             c.IsActive = false;
             _repo.Update(c);
@@ -129,3 +130,6 @@ namespace ShopApi.Services
         }
     }
 }
+
+
+
