@@ -135,4 +135,4 @@ Authorization: Bearer <token>
 
 ## 10) Tai lieu test bo sung
 - Checklist bai 15: `D:\ShopApi\BAI15_TEST.md`
-- Checklist tong hop bai 1-16: `D:\ShopApi\SHOPAPI_TEST_1_16.md`
+
