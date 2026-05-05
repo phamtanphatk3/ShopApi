@@ -20,6 +20,32 @@ namespace ShopApi.Services
             _config = config;
         }
 
+        // Dang ky tai khoan moi.
+        public async Task<Models.User> RegisterAsync(string username, string password, string? role = null)
+        {
+            username = username.Trim();
+
+            var existed = await _context.Users.AnyAsync(x => x.Username == username);
+            if (existed)
+                throw new AppConflictException("Ten dang nhap da ton tai");
+
+            var normalizedRole = string.IsNullOrWhiteSpace(role) ? "Customer" : role.Trim();
+            if (normalizedRole != "Admin" && normalizedRole != "Staff" && normalizedRole != "Customer")
+                throw new AppBadRequestException("Role khong hop le");
+
+            var user = new Models.User
+            {
+                Username = username,
+                Password = PasswordHelper.HashPassword(password),
+                Role = normalizedRole
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return user;
+        }
+
         // Dang nhap, kiem tra mat khau va tao JWT token cho nguoi dung hop le.
         public async Task<string?> Login(string username, string password)
         {

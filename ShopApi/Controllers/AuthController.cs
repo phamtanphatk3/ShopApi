@@ -17,6 +17,26 @@ namespace ShopApi.Controllers
             _service = service;
         }
 
+        // Dang ky tai khoan theo contract API toi thieu.
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        {
+            var user = await _service.RegisterAsync(request.Username, request.Password, request.Role);
+
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Dang ky thanh cong",
+                Data = new
+                {
+                    id = user.Id,
+                    username = user.Username,
+                    role = user.Role
+                }
+            });
+        }
+
         // Xac thuc tai khoan va tra ve JWT token.
         [HttpPost("login")]
         [AllowAnonymous]

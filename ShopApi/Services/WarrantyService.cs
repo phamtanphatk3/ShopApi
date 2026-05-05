@@ -121,6 +121,24 @@ namespace ShopApi.Services
                 .ToList();
         }
 
+        // Tra cuu bao hanh theo serial, phone hoac orderCode.
+        public async Task<List<WarrantyLookupResponseDto>> LookupByOrderCodeAsync(
+            string? serial,
+            string? phone,
+            string? orderCode)
+        {
+            int? orderId = null;
+            if (!string.IsNullOrWhiteSpace(orderCode))
+            {
+                orderId = await _context.Orders
+                    .Where(x => x.OrderCode == orderCode.Trim())
+                    .Select(x => (int?)x.Id)
+                    .FirstOrDefaultAsync();
+            }
+
+            return await LookupAsync(serial, phone, orderId);
+        }
+
         // Chuyen doi du lieu WarrantyRecord sang DTO tra cuu.
         private static WarrantyLookupResponseDto ToLookupDto(WarrantyRecord record, string productName)
         {

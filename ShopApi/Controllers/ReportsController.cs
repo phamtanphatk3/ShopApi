@@ -30,6 +30,33 @@ namespace ShopApi.Controllers
             });
         }
 
+        // Alias route theo contract API toi thieu: /api/reports/sales
+        [HttpGet("sales")]
+        public async Task<IActionResult> Sales(
+            [FromQuery] DateTime? from,
+            [FromQuery] DateTime? to,
+            [FromQuery] string groupBy = "day")
+        {
+            if (groupBy.Equals("month", StringComparison.OrdinalIgnoreCase))
+            {
+                var monthData = await _service.GetRevenueByMonth(from, to);
+                return Ok(new ApiResponse<object>
+                {
+                    Success = true,
+                    Message = "Thanh cong",
+                    Data = monthData
+                });
+            }
+
+            var dayData = await _service.GetRevenueByDay(from, to);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Thanh cong",
+                Data = dayData
+            });
+        }
+
         // Bao cao doanh thu theo thang.
         [HttpGet("revenue/monthly")]
         public async Task<IActionResult> RevenueByMonth([FromQuery] DateTime? from, [FromQuery] DateTime? to)

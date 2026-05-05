@@ -32,7 +32,7 @@ namespace ShopApi.Controllers
         }
 
         // Tra cuu bao hanh theo serial, so dien thoai hoac ma don.
-        [AllowAnonymous]
+        [Authorize]
         [HttpGet("lookup")]
         public async Task<IActionResult> Lookup(
             [FromQuery] string? serial,
