@@ -127,12 +127,6 @@ Authorization: Bearer <token>
   - `GET /api/reports/orders-by-status`
   - `GET /api/reports/low-stock`
 
-## 9) Luu y cho frontend
-- CORS can mo domain frontend trong `Program.cs` neu frontend chay host khac.
-- API response da theo format:
-  - Thanh cong: `ApiResponse<T> { success, message, data }`
-  - Loi: `ApiErrorResponse { success, message, traceId, path, timestamp }`
-
-## 10) Tai lieu test bo sung
+## 9) Tai lieu test bo sung
 - Checklist bai 15: `D:\ShopApi\BAI15_TEST.md`
 
