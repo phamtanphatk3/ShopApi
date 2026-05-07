@@ -10,6 +10,7 @@
         public decimal Price { get; set; }
         public decimal FinalPrice { get; set; }
         public int StockQuantity { get; set; }
+        public string? Img { get; set; }
     }
 }
 

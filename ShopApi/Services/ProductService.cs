@@ -28,6 +28,9 @@ namespace ShopApi.Services
             data = data
                 .Include(x => x.RegionPrices);
 
+            data = data
+                .Include(x => x.Images);
+
             // Tim kiem theo ten hoac SKU.
             if (!string.IsNullOrEmpty(query.Keyword))
             {
@@ -84,7 +87,12 @@ namespace ShopApi.Services
                     Price = x.Price, // Gia goc cua san pham.
 
                     FinalPrice = CalculatePriceWithBase(basePrice, promo), // Gia sau khi ap dung khu vuc va khuyen mai.
-                    StockQuantity = x.StockQuantity
+                    StockQuantity = x.StockQuantity,
+                    Img = x.Images
+                        .OrderByDescending(i => i.IsMain)
+                        .ThenBy(i => i.SortOrder)
+                        .Select(i => i.ImageUrl)
+                        .FirstOrDefault()
                 };
             }).ToList();
 
@@ -104,6 +112,7 @@ namespace ShopApi.Services
                 .Include(x => x.ProductPromotions)
                     .ThenInclude(pp => pp.Promotion)
                 .Include(x => x.RegionPrices)
+                .Include(x => x.Images)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (p == null) return null;
@@ -125,7 +134,12 @@ namespace ShopApi.Services
                 Brand = p.Brand,
                 Price = p.Price,
                 FinalPrice = CalculatePriceWithBase(basePrice, promo),
-                StockQuantity = p.StockQuantity
+                StockQuantity = p.StockQuantity,
+                Img = p.Images
+                    .OrderByDescending(i => i.IsMain)
+                    .ThenBy(i => i.SortOrder)
+                    .Select(i => i.ImageUrl)
+                    .FirstOrDefault()
             };
         }
 
