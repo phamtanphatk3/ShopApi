@@ -47,6 +47,7 @@ namespace ShopApi.Controllers
                 Data = data
             });
         }
+
     }
 }
 

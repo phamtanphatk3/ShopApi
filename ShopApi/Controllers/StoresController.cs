@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using ShopApi.Common;
 using ShopApi.Services;
 
 namespace ShopApi.Controllers
@@ -19,7 +20,12 @@ namespace ShopApi.Controllers
         public async Task<IActionResult> GetByProvince(string province)
         {
             var data = await _service.GetByProvince(province);
-            return Ok(data);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Thanh cong",
+                Data = data
+            });
         }
 
         // Tim cac cua hang gan nhat theo vi do, kinh do.
@@ -27,7 +33,12 @@ namespace ShopApi.Controllers
         public async Task<IActionResult> GetNearest(double lat, double lng)
         {
             var result = await _service.GetNearest(lat, lng);
-            return Ok(result);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Thanh cong",
+                Data = result
+            });
         }
 
         // Kiem tra cua hang con ton kho theo san pham.
@@ -35,8 +46,12 @@ namespace ShopApi.Controllers
         public async Task<IActionResult> HasProduct(int productId)
         {
             var data = await _service.HasProduct(productId);
-            return Ok(data);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Thanh cong",
+                Data = data
+            });
         }
     }
 }
-

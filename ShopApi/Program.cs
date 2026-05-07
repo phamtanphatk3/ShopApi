@@ -113,7 +113,7 @@ namespace ShopApi
                 });
             });
 
-            // Luon dung JWT auth (tat che do bypass de bat buoc dang nhap/phan quyen).
+            // Luon dung JWT auth.
             var key = builder.Configuration["Jwt:Key"];
             if (string.IsNullOrEmpty(key) || key.Length < 32)
                 throw new Exception("JWT Key phai dai it nhat 32 ky tu");
@@ -121,7 +121,7 @@ namespace ShopApi
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.RequireHttpsMetadata = false; // Co the bat true khi deploy production.
+                    options.RequireHttpsMetadata = false; 
                     options.SaveToken = true;
                     options.IncludeErrorDetails = true;
 

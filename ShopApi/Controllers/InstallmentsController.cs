@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using ShopApi.Common;
 using ShopApi.DTOs.Installment;
 using ShopApi.Services;
 
@@ -20,8 +21,12 @@ namespace ShopApi.Controllers
         public async Task<IActionResult> Create(InstallmentCreateDto dto)
         {
             var result = await _service.Create(dto);
-            return Ok(result);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Thanh cong",
+                Data = result
+            });
         }
     }
 }
-

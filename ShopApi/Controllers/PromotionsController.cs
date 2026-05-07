@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopApi.Common;
 using ShopApi.DTOs.ProductImage;
@@ -27,7 +27,16 @@ namespace ShopApi.Controllers
             {
                 Success = true,
                 Message = "Tao thanh cong",
-                Data = promo
+                Data = new
+                {
+                    promo.Id,
+                    promo.Name,
+                    promo.DiscountType,
+                    promo.DiscountValue,
+                    promo.StartDate,
+                    promo.EndDate,
+                    promo.IsActive
+                }
             });
         }
 
@@ -45,4 +54,3 @@ namespace ShopApi.Controllers
         }
     }
 }
-

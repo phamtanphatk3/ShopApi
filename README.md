@@ -1,97 +1,73 @@
-# ShopApi - Backend bai tap 1-16
+# ShopApi Backend (ASP.NET Core 10)
 
-## 1) Mo ta ngan
-ShopApi la backend ASP.NET Core + EF Core cho bai tap Shop dien may (bai 1 den bai 16), gom:
-- CRUD Category/Product/ProductImage
-- Cart/Order/Coupon
-- Promotion + gia sau giam
-- Gia theo khu vuc
-- Store + ton kho theo cua hang
-- Warranty lookup
-- Installment simulation
-- Auth + phan quyen Admin/Staff/Customer
-- Logging + global exception middleware
-- Reports (doanh thu, top ban chay, don theo trang thai, ton kho thap)
+## 1. Tong quan
+ShopApi la backend cho bai tap thuc hanh shop dien may (bai 1-16), su dung:
+- ASP.NET Core 10 Web API
+- Entity Framework Core
+- SQL Server
+- JWT Authentication + Role-based Authorization
 
-## 2) Kien truc ngan gon
-- `Controllers/`: nhan request, authorize, tra response.
-- `Services/`: xu ly nghiep vu.
-- `Repositories/`: truy cap du lieu cho mot so module.
-- `Data/AppDbContext`: cau hinh EF Core, relation, index, seed.
-- `Models/`: entity map DB.
-- `DTOs/`: model request/response cho API.
-- `Middlewares/ExceptionMiddleware`: bat loi toan cuc, tra format loi thong nhat.
-- `Validators/` + FluentValidation: validate input.
+## 2. Cau truc du an
+Thu muc chinh trong `D:\ShopApi\ShopApi`:
+- `Controllers`: endpoint API
+- `Services`: xu ly nghiep vu
+- `Repositories`: truy cap du lieu (Category/Product)
+- `Data`: `AppDbContext`, cau hinh EF Core
+- `Models`: entity map bang SQL
+- `DTOs`: request/response model cho API
+- `Validators`: FluentValidation
+- `Middlewares`: global exception middleware
+- `Common`: ApiResponse, ApiErrorResponse, helper
+- `Migrations`: lich su thay doi schema DB
+- `wwwroot`: file tinh (anh san pham)
 
-Flow: `Client -> Controller -> Service -> DbContext/Repository -> SQL Server -> Response`.
+Flow: `Controller -> Service -> Repository/DbContext -> SQL Server`.
 
-## 3) Yeu cau moi truong
+## 3. Yeu cau moi truong
 - .NET SDK 10
 - SQL Server
 - dotnet-ef
 
-Lenh cai dotnet-ef (neu chua co):
+Cai dat `dotnet-ef` (neu chua co):
 ```bash
 dotnet tool install --global dotnet-ef
 ```
 
-## 4) Cach chay du an
-1. Mo terminal:
+## 4. Cau hinh
+File chinh:
+- `D:\ShopApi\ShopApi\appsettings.json`
+- `D:\ShopApi\ShopApi\appsettings.Development.json`
+
+Can kiem tra:
+- `ConnectionStrings:Default`
+- `Jwt:Key` (do dai >= 32 ky tu)
+
+## 5. Chay du an
 ```bash
 cd D:\ShopApi\ShopApi
-```
-
-2. Restore:
-```bash
 dotnet restore
-```
-
-3. Migrate DB:
-```bash
 dotnet ef database update
-```
-
-4. Run API:
-```bash
 dotnet run
 ```
 
-5. Mo Swagger:
-- Localhost: `https://localhost:7212/swagger/index.html`
-- LAN (theo launch profile hien tai): `https://192.168.1.32:7212/swagger/index.html`
+Swagger:
+- `https://localhost:7212/swagger/index.html`
 
-Neu port/IP khac, xem log `Now listening on ...` trong console.
-
-## 5) Migration va reset DB
-Reset sach DB:
+## 6. Reset database
 ```bash
+cd D:\ShopApi\ShopApi
 dotnet ef database drop --force
 dotnet ef database update
 ```
 
-Danh sach migration trong thu muc:
-- `D:\ShopApi\ShopApi\Migrations`
-
-## 6) Seed du lieu
-Sau `dotnet ef database update`, du lieu seed co san tu migration/model config:
-- Category mau
-- User mau (neu chua ton tai) duoc chen bo sung trong migration `AddUserIdToCart`
-
-Neu can tao them user Staff bang SQL:
-```sql
-INSERT INTO Users(Username, Password, Role)
-VALUES ('staff01', '123', 'Staff');
-```
-
-## 7) Tai khoan mau
-Mac dinh dung de test:
+## 7. Tai khoan
 - Admin: `admin / 123`
 - Customer: `user1 / 123`
 
 Dang nhap:
 - `POST /api/auth/login`
 
-Body:
+Body mau:
 ```json
 {
   "username": "admin",
@@ -99,27 +75,64 @@ Body:
 }
 ```
 
-Lay token va truyen:
+Header sau khi login:
 ```text
 Authorization: Bearer <token>
 ```
 
-## 8) Link test API nhanh
-- Swagger UI:
-  - `https://localhost:7212/swagger/index.html`
-  - `https://192.168.1.32:7212/swagger/index.html`
+## 8. Phan quyen
+- Mac dinh endpoint yeu cau dang nhap JWT
+- `[AllowAnonymous]`: chi `login` va `register`
+- `Admin/Staff`: API quan tri (CRUD san pham, promotion, report, inventory...)
+- `Customer`: gio hang, dat hang, xem don cua minh
+
+## 9. API chinh
 - Auth:
+  - `POST /api/auth/register`
   - `POST /api/auth/login`
-- Products listing:
+- Categories:
+  - `GET /api/categories`
+  - `GET /api/categories/{id}`
+  - `POST /api/categories`
+  - `PUT /api/categories/{id}`
+  - `DELETE /api/categories/{id}`
+- Products:
   - `GET /api/products`
-- Product detail:
   - `GET /api/products/{id}/detail`
+  - `POST /api/products`
+  - `PUT /api/products/{id}`
+  - `DELETE /api/products/{id}`
+- Product Images:
+  - `POST /api/products/{productId}/images`
+  - `GET /api/products/{productId}/images`
+- Promotions:
+  - `POST /api/promotions`
+  - `POST /api/promotions/{promoId}/products/{productId}`
 - Cart:
   - `POST /api/cart`
   - `GET /api/cart`
+  - `PUT /api/cart`
+  - `DELETE /api/cart`
 - Orders:
   - `POST /api/orders`
   - `GET /api/orders`
+  - `GET /api/orders/{id}`
+  - `GET /api/orders/all`
+  - `PUT /api/orders/{id}/status`
+- Coupons:
+  - `GET /api/coupons/validate?code=...&orderAmount=...`
+- Region Prices:
+  - `GET /api/products/{productId}/region-prices`
+  - `POST /api/products/{productId}/region-prices`
+  - `PUT /api/products/{productId}/region-prices/{region}`
+  - `DELETE /api/products/{productId}/region-prices/{region}`
+- Stores:
+  - `GET /api/stores/by-province`
+  - `GET /api/stores/nearest`
+  - `GET /api/stores/has-product`
+- Warranty:
+  - `POST /api/warranty`
+  - `GET /api/warranty/lookup`
 - Reports:
   - `GET /api/reports/revenue/daily`
   - `GET /api/reports/revenue/monthly`
@@ -127,6 +140,22 @@ Authorization: Bearer <token>
   - `GET /api/reports/orders-by-status`
   - `GET /api/reports/low-stock`
 
-## 9) Tai lieu test bo sung
-- Checklist bai 15: `D:\ShopApi\BAI15_TEST.md`
+## 10. Tinh nang da co theo bai 1-16
+- CRUD danh muc + rang buoc xoa mem
+- CRUD san pham + search/filter/sort/paging
+- Anh san pham (upload, isMain, sortOrder)
+- Khuyen mai va gia sau giam
+- Chi tiet san pham + specs + related
+- Gio hang va dat hang tu gio
+- Coupon validation
+- Gia theo khu vuc + fallback
+- Store lookup + ton kho
+- Warranty lookup
+- Installment simulation
+- JWT auth + role
+- Global exception + log
+- Bao cao + memory cache
 
+## 11. Loi thuong gap
+- `401`: thieu token, token sai/het han, sai dinh dang Bearer
+- `403`: token dung nhung sai role
