@@ -1,0 +1,75 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using ShopApi.Common;
+using ShopApi.DTOs.ProductImage;
+using ShopApi.Services;
+
+namespace ShopApi.Controllers
+{
+    [ApiController]
+    [Route("api/products/{productId}/images")]
+    public class ProductImagesController : ControllerBase
+    {
+        private readonly ProductImageService _service;
+
+        public ProductImagesController(ProductImageService service)
+        {
+            _service = service;
+        }
+
+        // Upload anh cho san pham va tra ve danh sach anh sau khi cap nhat.
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpPost]
+        public async Task<IActionResult> Upload(int productId, [FromForm] UploadImageDto dto)
+        {
+            await _service.UploadAsync(productId, dto);
+            var data = await _service.GetImagesAsync(productId);
+
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Tai anh thanh cong",
+                Data = data
+            });
+        }
+
+        // Lay danh sach anh cua san pham.
+        [HttpGet]
+        public async Task<IActionResult> GetImages(int productId)
+        {
+            var data = await _service.GetImagesAsync(productId);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Thanh cong",
+                Data = data
+            });
+        }
+
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpDelete("{imageId}")]
+        public async Task<IActionResult> Delete(int productId, int imageId)
+        {
+            await _service.DeleteAsync(productId, imageId);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Xoa anh thanh cong",
+                Data = new { productId, imageId }
+            });
+        }
+
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpPut("{imageId}/main")]
+        public async Task<IActionResult> SetMain(int productId, int imageId)
+        {
+            await _service.SetMainAsync(productId, imageId);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Cap nhat anh dai dien thanh cong",
+                Data = new { productId, imageId }
+            });
+        }
+    }
+}
