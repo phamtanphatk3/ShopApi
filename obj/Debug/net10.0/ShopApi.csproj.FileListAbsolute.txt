@@ -1,5 +1,6 @@
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\appsettings.Development.json
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\appsettings.json
+C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\appsettings.Production.json
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\swagger-debug.json
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\ShopApi.staticwebassets.runtime.json
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\ShopApi.staticwebassets.endpoints.json
@@ -47,6 +48,8 @@ C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\Microsoft.SqlSe
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\Microsoft.VisualStudio.SolutionPersistence.dll
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\Mono.TextTemplating.dll
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\Newtonsoft.Json.dll
+C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\Npgsql.dll
+C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\SQLitePCLRaw.core.dll
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
@@ -153,6 +156,7 @@ C:\Users\ShopApi-master\ShopApi-master\ShopApi\obj\Debug\net10.0\ShopApi.Assembl
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\obj\Debug\net10.0\ShopApi.csproj.CoreCompileInputs.cache
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\obj\Debug\net10.0\ShopApi.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\obj\Debug\net10.0\ShopApi.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\ShopApi-master\ShopApi-master\ShopApi\obj\Debug\net10.0\ShopApi.sourcelink.json
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\obj\Debug\net10.0\rjimswa.dswa.cache.json
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
@@ -168,4 +172,3 @@ C:\Users\ShopApi-master\ShopApi-master\ShopApi\obj\Debug\net10.0\refint\ShopApi.
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\obj\Debug\net10.0\ShopApi.pdb
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\obj\Debug\net10.0\ShopApi.genruntimeconfig.cache
 C:\Users\ShopApi-master\ShopApi-master\ShopApi\obj\Debug\net10.0\ref\ShopApi.dll
-C:\Users\ShopApi-master\ShopApi-master\ShopApi\bin\Debug\net10.0\appsettings.Production.json

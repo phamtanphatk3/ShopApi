@@ -1,0 +1,1 @@
+ENTRYPOINT ["dotnet", "ShopApi.dll"]
