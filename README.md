@@ -1,30 +1,40 @@
 # ShopApi
 
-ShopApi la du an ASP.NET Core Web API cho he thong ban hang thiet bi dien tu.
+ShopApi là ASP.NET Core Web API cho hệ thống bán hàng thiết bị điện tử.
 
-## Tong quan backend
+## Quy trình
 
-- .NET `net10.0`
-- ASP.NET Core Web API
-- Entity Framework Core + SQL Server
-- JWT Bearer Authentication
-- FluentValidation
-- Swagger / Swashbuckle
-- CORS cho frontend goi API bang URL
-- Repository + Service pattern
+- `ShopApi` quản lý sản phẩm, giỏ hàng, đơn hàng, coupon, khuyến mãi, tồn kho, bảo hành, trả góp, cửa hàng và báo cáo.
+- Backend dùng `.NET 10`, `Entity Framework Core`, `SQL Server`, `JWT`, `FluentValidation`, `Swagger`, `CORS`.
+- Login trả về `token` và `user` gồm `id`, `username`, `role`, `email`, `phone`, `address`.
+- Mặc định API bị khóa bằng JWT; endpoint public phải gắn `[AllowAnonymous]`.
+- `Program.cs` đã cấu hình CORS, Swagger, auth, validation, DI.
 
-## Chuc nang backend da co
+## Chức năng chính
 
-- Dang ky, dang nhap, lay profile, doi mat khau
-- Danh muc, san pham, anh san pham
-- Ton kho, gia theo khu vuc
-- Gio hang, don hang, huy don
-- Khuyen mai, ma giam gia
-- Tra gop, bao hanh
-- Cua hang, bao cao
-- Danh sach yeu thich (`wishlist`)
+- Auth: đăng ký, đăng nhập, profile, đổi mật khẩu
+- Products: danh sách, chi tiết, ảnh, giá theo khu vực
+- Cart / Orders / Wishlist
+- Coupons / Promotions / Stores
+- Inventory / Warranty / Installments / Reports
+- Categories / Product region prices / Product images
 
-## Chay local
+## Bảng quyền truy cập API ngắn
+
+| Nhóm | Endpoint ví dụ | Cần token | Quyền |
+|---|---|---:|---|
+| Public | `POST /api/auth/login` | Không | - |
+| Public | `GET /api/coupons/validate` | Không / tùy flow | - |
+| User | `GET /api/auth/me` | Có | User |
+| User | `POST /api/cart` | Có | User |
+| User | `POST /api/orders` | Có | User |
+| User | `GET /api/wishlist` | Có | User |
+| Admin/Staff | `POST /api/products` | Có | Admin/Staff |
+| Admin/Staff | `DELETE /api/coupons/{id}` | Có | Admin/Staff |
+| Admin/Staff | `POST /api/stores` | Có | Admin/Staff |
+| Admin/Staff | `GET /api/reports/revenue/daily` | Có | Admin/Staff |
+
+## Chạy local
 
 ```powershell
 dotnet restore
@@ -38,20 +48,30 @@ dotnet run
 dotnet ef database update
 ```
 
-Neu can tao migration moi:
+Tạo migration mới:
 
 ```powershell
 dotnet ef migrations add <MigrationName>
 dotnet ef database update
 ```
 
+## Dữ liệu mẫu Development
+
+Khi chạy ở Development, app có thể tự seed dữ liệu mẫu nếu bảng sản phẩm còn trống:
+
+- `admin / 123`
+- `staff / 123`
+- `customer / 123`
+- `WELCOME10`
+- `SHIPFREE`
+
 ## CORS
 
-Project da co CORS trong `Program.cs`. Origin cho phep nam trong `appsettings.json` va `appsettings.Production.json`.
+Origin cho phép nằm trong `appsettings.json` và `appsettings.Production.json`.
 
-## Luu y
+## Lưu ý kỹ thuật
 
-- Controller chi xu ly HTTP concerns.
-- Business logic nam trong `Services/`.
-- Validation nam trong `Validators/`.
-- Loi nghiep vu xu ly qua `ExceptionMiddleware`.
+- Controller chỉ xử lý HTTP.
+- Business logic nằm trong `Services/`.
+- Validation nằm trong `Validators/`.
+- Lỗi nghiệp vụ đi qua `ExceptionMiddleware`.
