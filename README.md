@@ -24,29 +24,6 @@ ShopApi la du an ASP.NET Core Web API cho he thong ban hang thiet bi dien tu.
 - Cua hang, bao cao
 - Danh sach yeu thich (`wishlist`)
 
-## Thong tin login tra ve
-
-`POST /api/auth/login` tra ve:
-
-- `token`
-- `user.id`
-- `user.username`
-- `user.role`
-- `user.email`
-- `user.phone`
-- `user.address`
-
-## User fields
-
-Model `User` co:
-
-- `Username`
-- `Password`
-- `Role`
-- `Email`
-- `Phone`
-- `Address`
-
 ## Chay local
 
 ```powershell
