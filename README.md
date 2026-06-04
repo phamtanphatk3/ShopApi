@@ -2,7 +2,7 @@
 
 ShopApi la ASP.NET Core Web API cho he thong ban hang thiet bi dien tu.
 
-## Cấu trúc
+## Cau truc
 
 - `ShopApi` quan ly san pham, gio hang, don hang, coupon, khuyen mai, ton kho, bao hanh, tra gop, cua hang va bao cao.
 - Backend dung `.NET 10`, `Entity Framework Core`, `SQL Server`, `JWT`, `FluentValidation`, `Swagger`, `CORS`.
