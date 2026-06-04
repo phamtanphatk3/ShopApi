@@ -50,7 +50,7 @@ namespace ShopApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var token = await _service.Login(request.Username, request.Password);
+            var token = await _service.LoginAsync(request.Username, request.Password);
 
             if (token == null)
             {
@@ -68,9 +68,61 @@ namespace ShopApi.Controllers
                 Message = "Dang nhap thanh cong",
                 Data = new
                 {
-                    token = token.Value.Token,
-                    user = token.Value.User
+                    token = token.AccessToken,
+                    refreshToken = token.RefreshToken,
+                    refreshTokenExpiresAt = token.RefreshTokenExpiresAt,
+                    user = token.User
                 }
+            });
+        }
+
+        [HttpPost("refresh")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto request)
+        {
+            var session = await _service.RefreshAsync(request.RefreshToken);
+            if (session == null)
+            {
+                return Unauthorized(new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "Refresh token khong hop le hoac da het han"
+                });
+            }
+
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Lam moi token thanh cong",
+                Data = new
+                {
+                    token = session.AccessToken,
+                    refreshToken = session.RefreshToken,
+                    refreshTokenExpiresAt = session.RefreshTokenExpiresAt,
+                    user = session.User
+                }
+            });
+        }
+
+        [HttpPost("logout")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Logout([FromBody] RefreshTokenRequestDto request)
+        {
+            var success = await _service.LogoutAsync(request.RefreshToken);
+            if (!success)
+            {
+                return Unauthorized(new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "Refresh token khong hop le hoac da het han"
+                });
+            }
+
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Dang xuat thanh cong",
+                Data = new { revoked = true }
             });
         }
 

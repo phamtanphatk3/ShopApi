@@ -78,4 +78,14 @@ namespace ShopApi.Validators
                 .WithMessage("ConfirmPassword phai khop voi NewPassword");
         }
     }
+
+    public class RefreshTokenRequestDtoValidator : AbstractValidator<RefreshTokenRequestDto>
+    {
+        public RefreshTokenRequestDtoValidator()
+        {
+            RuleFor(x => x.RefreshToken)
+                .NotEmpty()
+                .WithMessage("Refresh token la bat buoc");
+        }
+    }
 }

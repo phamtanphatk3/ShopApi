@@ -18,7 +18,9 @@ Tai lieu nay dung de test nhanh backend theo tung nhom quyen.
 ## 3. Auth
 
 - `POST /api/auth/register` - tao user moi
-- `POST /api/auth/login` - tra `token` + `user`
+- `POST /api/auth/login` - tra `token`, `refreshToken` va `user`
+- `POST /api/auth/refresh` - lam moi access token
+- `POST /api/auth/logout` - huy refresh token
 - `GET /api/auth/me` - lay profile
 - `PUT /api/auth/me/password` - doi mat khau
 
@@ -47,6 +49,7 @@ Tai lieu nay dung de test nhanh backend theo tung nhom quyen.
 - `POST /api/orders` - tao don
 - `GET /api/orders` - don cua customer dang dang nhap
 - `GET /api/orders/{id}` - chi tiet don
+- `GET /api/orders/{id}/history` - lich su trang thai don
 - `PUT /api/orders/{id}/status` - cap nhat trang thai
 - `PUT /api/orders/{id}/cancel` - huy don
 - `GET /api/orders/all` - admin/staff lay tat ca don
@@ -74,15 +77,20 @@ Tai lieu nay dung de test nhanh backend theo tung nhom quyen.
 - `GET /api/reports/orders-by-status`
 - `GET /api/reports/low-stock`
 
-## 9. Muc tieu can test
+## 9. He thong
+
+- `GET /api/health` - kiem tra database va trang thai ung dung
+
+## 10. Muc tieu can test
 
 - `200` cho thanh cong
 - `400` cho validation / business rule
 - `401` cho chua dang nhap
 - `403` cho khong du quyen
 - `404` cho khong tim thay
+- `503` cho database chua san sang
 
-## 10. Du lieu mau
+## 11. Du lieu mau
 
 Khi chay Development, app co the seed:
 
@@ -92,7 +100,7 @@ Khi chay Development, app co the seed:
 - `WELCOME10`
 - `SHIPFREE`
 
-## 11. Cach doc nhanh
+## 12. Cach doc nhanh
 
 - Frontend: test public + user APIs
 - Staff/Admin: test them CRUD, inventory, report, promotion, coupon

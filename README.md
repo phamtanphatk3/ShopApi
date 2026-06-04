@@ -1,40 +1,41 @@
 # ShopApi
 
-ShopApi là ASP.NET Core Web API cho hệ thống bán hàng thiết bị điện tử.
+ShopApi la ASP.NET Core Web API cho he thong ban hang thiet bi dien tu.
 
-## Quy trình
+## 1 phut la hieu
 
-- `ShopApi` quản lý sản phẩm, giỏ hàng, đơn hàng, coupon, khuyến mãi, tồn kho, bảo hành, trả góp, cửa hàng và báo cáo.
-- Backend dùng `.NET 10`, `Entity Framework Core`, `SQL Server`, `JWT`, `FluentValidation`, `Swagger`, `CORS`.
-- Login trả về `token` và `user` gồm `id`, `username`, `role`, `email`, `phone`, `address`.
-- Mặc định API bị khóa bằng JWT; endpoint public phải gắn `[AllowAnonymous]`.
-- `Program.cs` đã cấu hình CORS, Swagger, auth, validation, DI.
+- `ShopApi` quan ly san pham, gio hang, don hang, coupon, khuyen mai, ton kho, bao hanh, tra gop, cua hang va bao cao.
+- Backend dung `.NET 10`, `Entity Framework Core`, `SQL Server`, `JWT`, `FluentValidation`, `Swagger`, `CORS`.
+- Login tra ve `token`, `refreshToken` va `user` gom `id`, `username`, `role`, `email`, `phone`, `address`.
+- Mac dinh API bi khoa bang JWT; endpoint public phai gan `[AllowAnonymous]`.
+- `Program.cs` da cau hinh CORS, Swagger, auth, validation, DI.
 
-## Chức năng chính
+## Chuc nang chinh
 
-- Auth: đăng ký, đăng nhập, profile, đổi mật khẩu
-- Products: danh sách, chi tiết, ảnh, giá theo khu vực
+- Auth: dang ky, dang nhap, profile, doi mat khau, refresh token, logout
+- Products: danh sach, chi tiet, anh, gia theo khu vuc
 - Cart / Orders / Wishlist
 - Coupons / Promotions / Stores
 - Inventory / Warranty / Installments / Reports
-- Categories / Product region prices / Product images
+- Categories / Product region prices / Product images / Order history / Health check
 
-## Bảng quyền truy cập API ngắn
+## Bang quyen truy cap API ngan
 
-| Nhóm | Endpoint ví dụ | Cần token | Quyền |
+| Nhom | Endpoint vi du | Can token | Quyen |
 |---|---|---:|---|
-| Public | `POST /api/auth/login` | Không | - |
-| Public | `GET /api/coupons/validate` | Không / tùy flow | - |
-| User | `GET /api/auth/me` | Có | User |
-| User | `POST /api/cart` | Có | User |
-| User | `POST /api/orders` | Có | User |
-| User | `GET /api/wishlist` | Có | User |
-| Admin/Staff | `POST /api/products` | Có | Admin/Staff |
-| Admin/Staff | `DELETE /api/coupons/{id}` | Có | Admin/Staff |
-| Admin/Staff | `POST /api/stores` | Có | Admin/Staff |
-| Admin/Staff | `GET /api/reports/revenue/daily` | Có | Admin/Staff |
+| Public | `POST /api/auth/login` | Khong | - |
+| Public | `GET /api/health` | Khong | - |
+| User | `GET /api/auth/me` | Co | User |
+| User | `POST /api/auth/refresh` | Co refresh token | User |
+| User | `POST /api/cart` | Co | User |
+| User | `POST /api/orders` | Co | User |
+| User | `GET /api/wishlist` | Co | User |
+| Admin/Staff | `POST /api/products` | Co | Admin/Staff |
+| Admin/Staff | `DELETE /api/coupons/{id}` | Co | Admin/Staff |
+| Admin/Staff | `POST /api/stores` | Co | Admin/Staff |
+| Admin/Staff | `GET /api/reports/revenue/daily` | Co | Admin/Staff |
 
-## Chạy local
+## Chay local
 
 ```powershell
 dotnet restore
@@ -48,16 +49,16 @@ dotnet run
 dotnet ef database update
 ```
 
-Tạo migration mới:
+Tao migration moi:
 
 ```powershell
 dotnet ef migrations add <MigrationName>
 dotnet ef database update
 ```
 
-## Dữ liệu mẫu Development
+## Du lieu mau Development
 
-Khi chạy ở Development, app có thể tự seed dữ liệu mẫu nếu bảng sản phẩm còn trống:
+Khi chay o Development, app co the seed du lieu mau neu bang san pham con trong:
 
 - `admin / 123`
 - `staff / 123`
@@ -67,11 +68,11 @@ Khi chạy ở Development, app có thể tự seed dữ liệu mẫu nếu bả
 
 ## CORS
 
-Origin cho phép nằm trong `appsettings.json` và `appsettings.Production.json`.
+Origin cho phep nam trong `appsettings.json` va `appsettings.Production.json`.
 
-## Lưu ý kỹ thuật
+## Luu y ky thuat
 
-- Controller chỉ xử lý HTTP.
-- Business logic nằm trong `Services/`.
-- Validation nằm trong `Validators/`.
-- Lỗi nghiệp vụ đi qua `ExceptionMiddleware`.
+- Controller chi xu ly HTTP.
+- Business logic nam trong `Services/`.
+- Validation nam trong `Validators/`.
+- Loi nghiep vu di qua `ExceptionMiddleware`.

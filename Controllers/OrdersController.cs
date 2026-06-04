@@ -35,9 +35,9 @@ namespace ShopApi.Controllers
         // Cap nhat trang thai don hang (chi Admin/Staff).
         [Authorize(Roles = "Admin,Staff")]
         [HttpPut("{id}/status")]
-        public async Task<IActionResult> UpdateStatus(int id, [FromQuery] string status)
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] OrderStatusUpdateRequestDto request)
         {
-            var data = await _service.UpdateStatus(id, status);
+            var data = await _service.UpdateStatus(id, request.Status, request.Reason);
             return Ok(new ApiResponse<object>
             {
                 Success = true,
@@ -92,14 +92,28 @@ namespace ShopApi.Controllers
 
         // Huy don hang cua khach hang hoac admin/staff theo rule trong service.
         [HttpPut("{id}/cancel")]
-        public async Task<IActionResult> Cancel(int id)
+        public async Task<IActionResult> Cancel(int id, [FromBody] CancelOrderRequestDto? request)
         {
-            var data = await _service.CancelOrderAsync(id);
+            var data = await _service.CancelOrderAsync(id, request?.Reason);
 
             return Ok(new ApiResponse<object>
             {
                 Success = true,
                 Message = "Huy don thanh cong",
+                Data = data
+            });
+        }
+
+        // Lay lich su trang thai don hang.
+        [HttpGet("{id}/history")]
+        public async Task<IActionResult> GetHistory(int id)
+        {
+            var data = await _service.GetStatusHistoryAsync(id);
+
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Thanh cong",
                 Data = data
             });
         }

@@ -63,6 +63,7 @@ namespace ShopApi
             builder.Services.AddMemoryCache();
 
             builder.Services.AddHttpContextAccessor();
+            builder.Services.AddHealthChecks();
 
             // Cau hinh CORS cho frontend goi API bang URL rieng.
             var allowedOrigins = builder.Configuration
@@ -177,6 +178,36 @@ namespace ShopApi
 
                             context.Token = authHeader.Trim();
                             return Task.CompletedTask;
+                        },
+                        OnChallenge = async context =>
+                        {
+                            context.HandleResponse();
+
+                            if (context.Response.HasStarted)
+                                return;
+
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            context.Response.ContentType = "application/json";
+
+                            await context.Response.WriteAsJsonAsync(new ApiResponse<object>
+                            {
+                                Success = false,
+                                Message = "Chua dang nhap hoac token khong hop le"
+                            });
+                        },
+                        OnForbidden = async context =>
+                        {
+                            if (context.Response.HasStarted)
+                                return;
+
+                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                            context.Response.ContentType = "application/json";
+
+                            await context.Response.WriteAsJsonAsync(new ApiResponse<object>
+                            {
+                                Success = false,
+                                Message = "Khong du quyen truy cap"
+                            });
                         }
                     };
 
@@ -226,6 +257,7 @@ namespace ShopApi
             app.UseCors("FrontendCors");
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseMiddleware<AuditLogMiddleware>();
 
             app.MapControllers();
 

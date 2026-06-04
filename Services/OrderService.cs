@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using ShopApi.Common.Exceptions;
 using ShopApi.Data;
 using ShopApi.DTOs.Order;
 using ShopApi.Models;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
 
 namespace ShopApi.Services
 {
@@ -22,11 +22,9 @@ namespace ShopApi.Services
         // Tao don hang tu gio hang cua user, co xu ly coupon va tru ton kho.
         public async Task<OrderResponseDto> CreateOrder(string? couponCode = null)
         {
-            var userIdClaim = _http.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
+            var actor = GetActorContext();
+            if (actor.UserId == null)
                 throw new AppUnauthorizedException("Chua dang nhap");
-
-            var userId = int.Parse(userIdClaim.Value);
 
             using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -35,12 +33,11 @@ namespace ShopApi.Services
                 var cart = await _context.Carts
                     .Include(c => c.Items)
                     .ThenInclude(i => i.Product)
-                    .FirstOrDefaultAsync(c => c.UserId == userId);
+                    .FirstOrDefaultAsync(c => c.UserId == actor.UserId.Value);
 
                 if (cart == null || !cart.Items.Any())
                     throw new AppBadRequestException("Gio hang dang trong");
 
-                // Kiem tra ton kho cho tung item truoc khi tao don.
                 foreach (var item in cart.Items)
                 {
                     if (item.Product == null)
@@ -50,7 +47,6 @@ namespace ShopApi.Services
                         throw new AppBadRequestException($"San pham {item.Product.Name} khong du ton kho");
                 }
 
-                // Kiem tra tinh hop le cua coupon neu co ap dung.
                 Coupon? coupon = null;
 
                 if (!string.IsNullOrWhiteSpace(couponCode))
@@ -61,27 +57,28 @@ namespace ShopApi.Services
                     if (coupon == null)
                         throw new AppNotFoundException("Khong tim thay ma giam gia");
 
-                    if (coupon.StartDate > DateTime.Now || coupon.EndDate < DateTime.Now)
+                    if (coupon.StartDate > DateTime.UtcNow || coupon.EndDate < DateTime.UtcNow)
                         throw new AppBadRequestException("Ma giam gia da het han");
 
                     if (coupon.UsedCount >= coupon.UsageLimit)
                         throw new AppBadRequestException("Ma giam gia da het luot su dung");
                 }
 
-                var user = await _context.Users.FindAsync(userId);
+                var user = await _context.Users.FindAsync(actor.UserId.Value);
                 if (user == null)
                     throw new AppNotFoundException("Khong tim thay nguoi dung");
 
-                // Tao don va tao danh sach order item tu cart item.
                 var order = new Order
                 {
-                    UserId = userId,
+                    UserId = actor.UserId.Value,
                     CustomerName = user.Username,
-                    OrderCode = $"ORD-{DateTime.UtcNow:yyyyMMddHHmmss}-{userId}",
+                    OrderCode = $"ORD-{DateTime.UtcNow:yyyyMMddHHmmss}-{actor.UserId.Value}",
                     CouponCode = couponCode?.Trim(),
                     Status = "Pending",
-                    CreatedAt = DateTime.Now,
-                    Items = new List<OrderItem>()
+                    CreatedAt = DateTime.UtcNow,
+                    LastStatusChangedAt = DateTime.UtcNow,
+                    Items = new List<OrderItem>(),
+                    StatusHistories = new List<OrderStatusHistory>()
                 };
 
                 foreach (var item in cart.Items)
@@ -103,11 +100,10 @@ namespace ShopApi.Services
                         ProductId = item.ProductId,
                         Quantity = -item.Quantity,
                         Type = "EXPORT",
-                        CreatedAt = DateTime.Now
+                        CreatedAt = DateTime.UtcNow
                     });
                 }
 
-                // Tinh tong tien don va ap dung coupon neu hop le.
                 order.FinalAmount = order.Items.Sum(x => x.LineTotal);
 
                 if (coupon != null)
@@ -130,27 +126,24 @@ namespace ShopApi.Services
                     coupon.UsedCount++;
                 }
 
-                // Luu don, xoa gio hang va commit giao dich.
+                order.StatusHistories.Add(new OrderStatusHistory
+                {
+                    FromStatus = null,
+                    ToStatus = order.Status,
+                    Reason = "Tao don hang",
+                    ChangedByUserId = actor.UserId,
+                    ChangedByRole = actor.Role,
+                    ChangedByUsername = actor.Username,
+                    ChangedAt = DateTime.UtcNow
+                });
+
                 _context.Orders.Add(order);
                 _context.CartItems.RemoveRange(cart.Items);
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return new OrderResponseDto
-                {
-                    Id = order.Id,
-                    Status = order.Status,
-                    FinalAmount = order.FinalAmount,
-                    CouponCode = order.CouponCode,
-                    Items = order.Items.Select(x => new
-                    {
-                        x.ProductId,
-                        x.Quantity,
-                        x.UnitPrice,
-                        x.LineTotal
-                    }).ToList<object>()
-                };
+                return MapOrderResponse(order);
             }
             catch
             {
@@ -160,9 +153,15 @@ namespace ShopApi.Services
         }
 
         // Cap nhat trang thai don hang theo danh sach trang thai hop le.
-        public async Task<object> UpdateStatus(int orderId, string status)
+        public async Task<object> UpdateStatus(int orderId, string status, string? reason = null)
         {
-            var order = await _context.Orders.FindAsync(orderId);
+            var actor = GetActorContext();
+            if (actor.UserId == null)
+                throw new AppUnauthorizedException("Chua dang nhap");
+
+            var order = await _context.Orders
+                .Include(x => x.StatusHistories)
+                .FirstOrDefaultAsync(x => x.Id == orderId);
 
             if (order == null)
                 throw new AppNotFoundException("Khong tim thay don hang");
@@ -175,38 +174,53 @@ namespace ShopApi.Services
             if (!validStatus.Contains(status))
                 throw new AppBadRequestException("Trang thai don hang khong hop le");
 
+            var previousStatus = order.Status;
             order.Status = status;
+            order.LastStatusChangedAt = DateTime.UtcNow;
+
+            if (string.Equals(status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+            {
+                order.CancelledAt = DateTime.UtcNow;
+                order.CancelReason = string.IsNullOrWhiteSpace(reason) ? order.CancelReason : reason.Trim();
+            }
+
+            order.StatusHistories.Add(new OrderStatusHistory
+            {
+                FromStatus = previousStatus,
+                ToStatus = status,
+                Reason = string.IsNullOrWhiteSpace(reason)
+                    ? $"Cap nhat trang thai sang {status}"
+                    : reason.Trim(),
+                ChangedByUserId = actor.UserId,
+                ChangedByRole = actor.Role,
+                ChangedByUsername = actor.Username,
+                ChangedAt = DateTime.UtcNow
+            });
+
             await _context.SaveChangesAsync();
 
-            return new
-            {
-                order.Id,
-                order.OrderCode,
-                order.Status,
-                order.CouponCode,
-                order.FinalAmount,
-                order.CreatedAt
-            };
+            return MapOrderSummary(order);
         }
 
         // Lay don hang cua user dang dang nhap.
         public async Task<object> GetMyOrders()
         {
-            var userIdClaim = _http.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
+            var actor = GetActorContext();
+            if (actor.UserId == null)
                 throw new AppUnauthorizedException("Chua dang nhap");
-
-            var userId = int.Parse(userIdClaim.Value);
 
             return await _context.Orders
                 .Include(o => o.Items)
-                .Where(o => o.UserId == userId)
+                .Where(o => o.UserId == actor.UserId.Value)
                 .Select(o => new
                 {
                     o.Id,
                     o.OrderCode,
                     o.CustomerName,
                     o.CouponCode,
+                    o.CancelReason,
+                    o.CancelledAt,
+                    o.LastStatusChangedAt,
                     o.Status,
                     o.FinalAmount,
                     o.CreatedAt,
@@ -232,6 +246,9 @@ namespace ShopApi.Services
                     o.OrderCode,
                     o.CustomerName,
                     o.CouponCode,
+                    o.CancelReason,
+                    o.CancelledAt,
+                    o.LastStatusChangedAt,
                     o.Status,
                     o.FinalAmount,
                     o.CreatedAt,
@@ -243,52 +260,61 @@ namespace ShopApi.Services
         // Lay chi tiet don theo id va role dang dang nhap.
         public async Task<object> GetById(int orderId)
         {
-            var userIdClaim = _http.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
+            var actor = GetActorContext();
+            if (actor.UserId == null)
                 throw new AppUnauthorizedException("Chua dang nhap");
-
-            var role = _http.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value;
-            var userId = int.Parse(userIdClaim.Value);
 
             var order = await _context.Orders
                 .Include(o => o.Items)
                 .Include(o => o.User)
+                .Include(o => o.StatusHistories)
                 .FirstOrDefaultAsync(o => o.Id == orderId);
 
             if (order == null)
                 throw new AppNotFoundException("Khong tim thay don hang");
 
-            if (string.Equals(role, "Customer", StringComparison.OrdinalIgnoreCase) && order.UserId != userId)
+            if (string.Equals(actor.Role, "Customer", StringComparison.OrdinalIgnoreCase) && order.UserId != actor.UserId)
                 throw new AppForbiddenException("Ban khong co quyen xem don hang nay");
 
-            return new
-            {
-                order.Id,
-                order.OrderCode,
-                order.CustomerName,
-                order.CouponCode,
-                order.Status,
-                order.FinalAmount,
-                order.CreatedAt,
-                Username = order.User.Username,
-                Items = order.Items.Select(i => new
-                {
-                    i.ProductId,
-                    i.Quantity,
-                    i.UnitPrice,
-                    i.LineTotal
-                })
-            };
+            return MapOrderDetail(order);
         }
 
-        public async Task<object> CancelOrderAsync(int orderId)
+        public async Task<object> GetStatusHistoryAsync(int orderId)
         {
-            var userIdClaim = _http.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
+            var actor = GetActorContext();
+            if (actor.UserId == null)
                 throw new AppUnauthorizedException("Chua dang nhap");
 
-            var role = _http.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value;
-            var userId = int.Parse(userIdClaim.Value);
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (order == null)
+                throw new AppNotFoundException("Khong tim thay don hang");
+
+            if (string.Equals(actor.Role, "Customer", StringComparison.OrdinalIgnoreCase) && order.UserId != actor.UserId)
+                throw new AppForbiddenException("Ban khong co quyen xem lich su don hang nay");
+
+            return await _context.OrderStatusHistories
+                .Where(x => x.OrderId == orderId)
+                .OrderBy(x => x.ChangedAt)
+                .Select(x => new OrderStatusHistoryDto
+                {
+                    Id = x.Id,
+                    FromStatus = x.FromStatus,
+                    ToStatus = x.ToStatus,
+                    Reason = x.Reason,
+                    ChangedByUsername = x.ChangedByUsername,
+                    ChangedByRole = x.ChangedByRole,
+                    ChangedAt = x.ChangedAt
+                })
+                .ToListAsync();
+        }
+
+        public async Task<object> CancelOrderAsync(int orderId, string? reason = null)
+        {
+            var actor = GetActorContext();
+            if (actor.UserId == null)
+                throw new AppUnauthorizedException("Chua dang nhap");
 
             using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -297,19 +323,30 @@ namespace ShopApi.Services
                 var order = await _context.Orders
                     .Include(o => o.Items)
                     .ThenInclude(i => i.Product)
+                    .Include(o => o.StatusHistories)
                     .FirstOrDefaultAsync(o => o.Id == orderId);
 
                 if (order == null)
                     throw new AppNotFoundException("Khong tim thay don hang");
 
-                if (string.Equals(role, "Customer", StringComparison.OrdinalIgnoreCase) && order.UserId != userId)
+                if (string.Equals(actor.Role, "Customer", StringComparison.OrdinalIgnoreCase) && order.UserId != actor.UserId)
                     throw new AppForbiddenException("Ban khong co quyen huy don hang nay");
 
                 if (!string.Equals(order.Status, "Pending", StringComparison.OrdinalIgnoreCase) &&
                     !string.Equals(order.Status, "Confirmed", StringComparison.OrdinalIgnoreCase))
                     throw new AppBadRequestException("Chi co the huy don Pending hoac Confirmed");
 
+                var previousStatus = order.Status;
+                var cancelReason = string.IsNullOrWhiteSpace(reason)
+                    ? (string.Equals(actor.Role, "Customer", StringComparison.OrdinalIgnoreCase)
+                        ? "Khach hang huy don"
+                        : "Nguoi quan tri huy don")
+                    : reason.Trim();
+
                 order.Status = "Cancelled";
+                order.CancelReason = cancelReason;
+                order.CancelledAt = DateTime.UtcNow;
+                order.LastStatusChangedAt = DateTime.UtcNow;
 
                 foreach (var item in order.Items)
                 {
@@ -319,7 +356,7 @@ namespace ShopApi.Services
                         ProductId = item.ProductId,
                         Quantity = item.Quantity,
                         Type = "IMPORT",
-                        CreatedAt = DateTime.Now
+                        CreatedAt = DateTime.UtcNow
                     });
                 }
 
@@ -330,6 +367,17 @@ namespace ShopApi.Services
                         coupon.UsedCount--;
                 }
 
+                order.StatusHistories.Add(new OrderStatusHistory
+                {
+                    FromStatus = previousStatus,
+                    ToStatus = "Cancelled",
+                    Reason = cancelReason,
+                    ChangedByUserId = actor.UserId,
+                    ChangedByRole = actor.Role,
+                    ChangedByUsername = actor.Username,
+                    ChangedAt = DateTime.UtcNow
+                });
+
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -337,7 +385,9 @@ namespace ShopApi.Services
                 {
                     order.Id,
                     order.OrderCode,
-                    order.Status
+                    order.Status,
+                    order.CancelReason,
+                    order.CancelledAt
                 };
             }
             catch
@@ -345,6 +395,93 @@ namespace ShopApi.Services
                 await transaction.RollbackAsync();
                 throw;
             }
+        }
+
+        private static OrderResponseDto MapOrderResponse(Order order)
+        {
+            return new OrderResponseDto
+            {
+                Id = order.Id,
+                Status = order.Status,
+                FinalAmount = order.FinalAmount,
+                CouponCode = order.CouponCode,
+                CancelReason = order.CancelReason,
+                CancelledAt = order.CancelledAt,
+                LastStatusChangedAt = order.LastStatusChangedAt,
+                Items = order.Items.Select(x => new
+                {
+                    x.ProductId,
+                    x.Quantity,
+                    x.UnitPrice,
+                    x.LineTotal
+                }).Cast<object>().ToList()
+            };
+        }
+
+        private static object MapOrderSummary(Order order)
+        {
+            return new
+            {
+                order.Id,
+                order.OrderCode,
+                order.Status,
+                order.CouponCode,
+                order.CancelReason,
+                order.CancelledAt,
+                order.LastStatusChangedAt,
+                order.FinalAmount,
+                order.CreatedAt
+            };
+        }
+
+        private static object MapOrderDetail(Order order)
+        {
+            return new
+            {
+                order.Id,
+                order.OrderCode,
+                order.CustomerName,
+                order.CouponCode,
+                order.CancelReason,
+                order.CancelledAt,
+                order.LastStatusChangedAt,
+                order.Status,
+                order.FinalAmount,
+                order.CreatedAt,
+                Username = order.User.Username,
+                Items = order.Items.Select(i => new
+                {
+                    i.ProductId,
+                    i.Quantity,
+                    i.UnitPrice,
+                    i.LineTotal
+                }),
+                StatusHistory = order.StatusHistories
+                    .OrderBy(x => x.ChangedAt)
+                    .Select(x => new OrderStatusHistoryDto
+                    {
+                        Id = x.Id,
+                        FromStatus = x.FromStatus,
+                        ToStatus = x.ToStatus,
+                        Reason = x.Reason,
+                        ChangedByUsername = x.ChangedByUsername,
+                        ChangedByRole = x.ChangedByRole,
+                        ChangedAt = x.ChangedAt
+                    })
+            };
+        }
+
+        private (int? UserId, string Role, string Username) GetActorContext()
+        {
+            var user = _http.HttpContext?.User;
+            var userIdClaim = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int? userId = int.TryParse(userIdClaim, out var parsedUserId) ? parsedUserId : null;
+
+            return (
+                userId,
+                user?.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty,
+                user?.FindFirst(ClaimTypes.Name)?.Value ?? string.Empty
+            );
         }
     }
 }
