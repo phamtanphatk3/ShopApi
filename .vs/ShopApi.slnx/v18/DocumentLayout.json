@@ -1,12 +1,85 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\ShopApi-master\\ShopApi-master\\ShopApi\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ShopApi-master\\ShopApi-master\\ShopApi\\ShopApi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ShopApi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ShopApi-master\\ShopApi-master\\ShopApi\\ShopApi.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ShopApi.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ShopApi-master\\ShopApi-master\\ShopApi\\.agents\\skills\\create-validator\\SKILL.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:.agents\\skills\\create-validator\\SKILL.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ShopApi-master\\ShopApi-master\\ShopApi\\SHOPAPI_FULL_TEST.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:SHOPAPI_FULL_TEST.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "SKILL.md",
+              "DocumentMoniker": "C:\\Users\\ShopApi-master\\ShopApi-master\\ShopApi\\.agents\\skills\\create-validator\\SKILL.md",
+              "RelativeDocumentMoniker": ".agents\\skills\\create-validator\\SKILL.md",
+              "ToolTip": "C:\\Users\\ShopApi-master\\ShopApi-master\\ShopApi\\.agents\\skills\\create-validator\\SKILL.md",
+              "RelativeToolTip": ".agents\\skills\\create-validator\\SKILL.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-06-08T10:25:12.58Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "SHOPAPI_FULL_TEST.md",
+              "DocumentMoniker": "C:\\Users\\ShopApi-master\\ShopApi-master\\ShopApi\\SHOPAPI_FULL_TEST.md",
+              "RelativeDocumentMoniker": "SHOPAPI_FULL_TEST.md",
+              "ToolTip": "C:\\Users\\ShopApi-master\\ShopApi-master\\ShopApi\\SHOPAPI_FULL_TEST.md",
+              "RelativeToolTip": "SHOPAPI_FULL_TEST.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-06-08T10:24:50.331Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ShopApi.http",
+              "DocumentMoniker": "C:\\Users\\ShopApi-master\\ShopApi-master\\ShopApi\\ShopApi.http",
+              "RelativeDocumentMoniker": "ShopApi.http",
+              "ToolTip": "C:\\Users\\ShopApi-master\\ShopApi-master\\ShopApi\\ShopApi.http",
+              "RelativeToolTip": "ShopApi.http",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2026-06-08T10:24:39.718Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ShopApi.csproj",
+              "DocumentMoniker": "C:\\Users\\ShopApi-master\\ShopApi-master\\ShopApi\\ShopApi.csproj",
+              "RelativeDocumentMoniker": "ShopApi.csproj",
+              "ToolTip": "C:\\Users\\ShopApi-master\\ShopApi-master\\ShopApi\\ShopApi.csproj",
+              "RelativeToolTip": "ShopApi.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-06-08T10:24:36.627Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
