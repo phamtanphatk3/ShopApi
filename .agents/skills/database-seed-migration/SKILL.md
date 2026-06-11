@@ -1,6 +1,6 @@
 ---
 name: database-seed-migration
-description: Cập nhật schema, migration và dữ liệu seed development cho ShopApi.
+description: Cập nhật schema, migration và seed data cho ShopApi. Dùng skill này khi thêm model mới, sửa quan hệ bảng, thêm/xóa column, cần migration, hoặc bổ sung dữ liệu mẫu để chạy local — kể cả khi task chỉ là thêm một field vào model hiện tại.
 ---
 
 # Migration và seed dữ liệu

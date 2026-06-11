@@ -1,6 +1,6 @@
 ---
 name: shopapi-orchestrator
-description: Điều phối mọi tác vụ trong ShopApi, xác định skill con phù hợp và hướng Codex đọc đúng phần cần thiết trước khi làm việc.
+description: Điểm vào chính cho mọi tác vụ trong dự án ShopApi. Dùng skill này trước tiên khi làm bất kỳ việc gì với ShopApi — thêm tính năng, sửa lỗi, refactor, debug hay cấu hình — để xác định skill con phù hợp và đọc luật nền từ codex.md trước khi bắt tay vào code.
 ---
 
 # ShopApi Orchestrator
@@ -19,6 +19,7 @@ Khi làm việc với dự án ShopApi và cần xác định nên dùng skill c
 - Validator request → `create-validator`
 - Exception, status code, response lỗi → `handle-exception`
 - Migration, seed, schema → `database-seed-migration`
+- Chạy local, appsettings, CORS, port, startup → `local-debug-config`
 - Đơn hàng, tồn kho, coupon, trạng thái đơn → `order-inventory-flow`
 - Ảnh sản phẩm, giá theo khu vực, khuyến mãi hiển thị → `product-media-pricing`
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Giá & Ảnh sản phẩm"
+  short_description: "Ảnh, giá vùng, khuyến mãi"
+  default_prompt: "Use $product-media-pricing to update ShopApi product images, region pricing, promotions, or product display logic."

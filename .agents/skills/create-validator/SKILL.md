@@ -1,6 +1,6 @@
 ---
 name: create-validator
-description: Tạo và cập nhật validator FluentValidation cho các request DTO của ShopApi theo đúng cấu trúc hiện có.
+description: Tạo và cập nhật validator FluentValidation cho ShopApi. Dùng skill này khi thêm DTO mới, sửa rule validation, thêm field vào request hiện có, hoặc chuẩn hóa error message — kể cả khi task nhỏ chỉ là thêm một rule vào validator đang có.
 ---
 
 # Tạo validator cho ShopApi

@@ -1,6 +1,6 @@
 ---
 name: setup-auth
-description: Thiết lập và cập nhật JWT, refresh token, logout, profile và phân quyền trong ShopApi.
+description: Thiết lập và cập nhật JWT, refresh token, logout, profile và phân quyền trong ShopApi. Dùng skill này khi sửa luồng đăng nhập, đăng ký, refresh, logout, thêm field vào User/profile, hoặc phân quyền endpoint — kể cả khi chỉ thêm [Authorize] vào một action mới.
 ---
 
 # Thiết lập auth cho ShopApi

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tạo CRUD ShopApi"
+  short_description: "Sinh CRUD đúng pattern của ShopApi"
+  default_prompt: "Use $generate-crud to create or extend a ShopApi CRUD flow with DTO, validator, service, controller, and schema updates when needed."

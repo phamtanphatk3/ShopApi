@@ -1,0 +1,4 @@
+interface:
+  display_name: "Chạy & Debug Local"
+  short_description: "Sửa cấu hình chạy, build và lỗi khởi động"
+  default_prompt: "Use $local-debug-config to fix ShopApi local run, appsettings, CORS, database provider, port, or startup errors."

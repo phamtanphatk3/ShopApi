@@ -1,0 +1,4 @@
+interface:
+  display_name: "Xử lý lỗi"
+  short_description: "Chuẩn hóa lỗi và HTTP status"
+  default_prompt: "Use $handle-exception to standardize ShopApi exceptions, HTTP status codes, and error responses."

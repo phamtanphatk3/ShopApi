@@ -1,0 +1,4 @@
+interface:
+  display_name: "Đơn hàng & Tồn kho"
+  short_description: "Checkout, hủy đơn, hoàn kho"
+  default_prompt: "Use $order-inventory-flow to work on ShopApi order creation, cancellation, stock, coupon, and status history."

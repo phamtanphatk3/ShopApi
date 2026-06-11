@@ -1,6 +1,6 @@
 ---
 name: handle-exception
-description: Xử lý ngoại lệ trong ShopApi bằng custom exception, middleware và response lỗi chuẩn ApiErrorResponse.
+description: Xử lý lỗi trong ShopApi theo chuẩn ApiErrorResponse. Dùng skill này khi thêm custom exception, sửa HTTP status code, chuẩn hóa response lỗi, hoặc bất kỳ lúc nào cần ném lỗi nghiệp vụ ra ngoài service — không chỉ khi sửa middleware.
 ---
 
 # Xử lý lỗi cho ShopApi

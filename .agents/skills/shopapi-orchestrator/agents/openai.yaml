@@ -1,0 +1,4 @@
+interface:
+  display_name: "ShopApi Orchestrator"
+  short_description: "Điều phối skill đúng cho ShopApi"
+  default_prompt: "Use $shopapi-orchestrator to choose the right ShopApi skill first, then follow the repo rules before making changes."

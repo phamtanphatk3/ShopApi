@@ -1,6 +1,6 @@
 ---
 name: order-inventory-flow
-description: Xử lý luồng tạo đơn, hủy đơn, hoàn kho, coupon và lịch sử trạng thái trong ShopApi.
+description: Xử lý toàn bộ luồng đơn hàng và tồn kho trong ShopApi. Dùng skill này khi đụng đến checkout, hủy đơn, đổi trạng thái đơn, trừ/hoàn kho, coupon, hay OrderStatusHistory — kể cả khi chỉ sửa một bước nhỏ trong luồng, vì các bảng phải đồng bộ nhau.
 ---
 
 # Luồng đơn hàng và tồn kho

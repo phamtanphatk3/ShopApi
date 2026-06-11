@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tạo Validator"
+  short_description: "Viết validator FluentValidation"
+  default_prompt: "Use $create-validator to add or update FluentValidation rules for a ShopApi request DTO."

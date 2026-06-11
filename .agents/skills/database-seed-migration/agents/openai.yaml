@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration & Seed"
+  short_description: "Cập nhật schema và dữ liệu mẫu"
+  default_prompt: "Use $database-seed-migration to update ShopApi models, migrations, or development seed data safely."

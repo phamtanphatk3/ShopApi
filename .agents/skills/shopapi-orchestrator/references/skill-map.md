@@ -10,6 +10,7 @@ Giúp Codex chọn đúng skill con trước khi triển khai.
 | Viết hoặc sửa validator | `create-validator` | `generate-crud` |
 | Chuẩn hóa lỗi, HTTP status, response lỗi | `handle-exception` | `setup-auth` |
 | Thêm/sửa migration, seed dữ liệu mẫu | `database-seed-migration` | `generate-crud` |
+| Chạy local, appsettings, CORS, port, startup | `local-debug-config` | `handle-exception`, `database-seed-migration` |
 | Tạo đơn, hủy đơn, hoàn kho, coupon, lịch sử trạng thái | `order-inventory-flow` | `handle-exception`, `database-seed-migration` |
 | Ảnh sản phẩm, giá theo khu vực, khuyến mãi hiển thị | `product-media-pricing` | `generate-crud` |
 

@@ -14,8 +14,9 @@ ShopApi là ASP.NET Core Web API cho hệ thống bán hàng thiết bị điệ
 - Validation đặt trong `Validators/` bằng FluentValidation.
 - Lỗi nghiệp vụ đi qua custom exception và `ExceptionMiddleware`.
 - Auth mặc định dùng JWT, `FallbackPolicy` khóa endpoint nếu không có `[AllowAnonymous]`.
+- Lỗi chạy local, appsettings, CORS, port, startup thì ưu tiên `local-debug-config`.
 - Không tự thêm pattern không có trong repo.
-- Không sửa file sinh tự động hoặc thư mục build như `bin/`, `obj/`, `.vs/`.
+- Không sửa file sinh tự động hoặc thư mục build như `bin/`, `obj/`, `.vs/`.    
 
 ## Phạm vi làm việc
 - Controller chỉ xử lý HTTP.

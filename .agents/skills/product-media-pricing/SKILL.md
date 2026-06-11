@@ -1,6 +1,6 @@
 ---
 name: product-media-pricing
-description: Cập nhật ảnh sản phẩm, giá theo khu vực, khuyến mãi và dữ liệu hiển thị của sản phẩm trong ShopApi.
+description: CQuản lý ảnh, giá và hiển thị sản phẩm trong ShopApi. Dùng skill này khi sửa logic giá cơ bản, giá theo vùng, khuyến mãi, upload/xóa ảnh, hoặc bất kỳ thay đổi nào ảnh hưởng đến dữ liệu hiển thị sản phẩm ra frontend.
 ---
 
 # Giá, ảnh và hiển thị sản phẩm

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Thiết lập Auth"
+  short_description: "JWT, refresh token, logout"
+  default_prompt: "Use $setup-auth to update ShopApi authentication, refresh tokens, logout, profile, or authorization rules."
